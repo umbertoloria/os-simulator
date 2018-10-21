@@ -1,7 +1,7 @@
 package com.umbertoloria.virtual_machine;
 
 import com.umbertoloria.memory.RAM;
-import com.umbertoloria.mips_project.cpu.CPUDriversManager;
+import com.umbertoloria.cpu.CPUDriversManager;
 import com.umbertoloria.program.Program;
 
 public class VirtualMachine {
