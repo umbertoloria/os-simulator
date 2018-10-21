@@ -5,25 +5,23 @@ import java.util.List;
 
 public class CPUDriversManager {
 
-	private List<CPUDriver> drivers = new ArrayList<CPUDriver>();
-	private CPUDriver pref;
+	private List<CPUDriver> drivers = new ArrayList<>();
 
-	public CPUDriversManager (int cores_count) {
+	public CPUDriversManager(int cores_count) {
 		CPU cpu;
 		for (int i = 0; i < cores_count; i++) {
 			cpu = new CPU(5);
 			drivers.add(new CPUDriver(cpu));
 		}
-		pref = drivers.get(0);
 	}
 
-	public CPUDriver getFree () {
-		return pref;
+	private CPUDriver getFree() {
+		return drivers.get(0);
 	}
 
 	// Operations
 
-	public int add (int a, int b) {
+	public int add(int a, int b) {
 		CPUDriver cd = getFree();
 		cd.instr(CPUDriver.ADD, a, b);
 		return cd.getAN();

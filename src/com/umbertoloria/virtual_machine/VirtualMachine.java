@@ -38,12 +38,11 @@ public class VirtualMachine {
 		}
 	}
 
-	public void interpretate(String instr) {
+	private void interpretate(String instr) {
 		String cmd = instr.substring(0, 3);
 		int index = instr.indexOf(" ", 4);
 		String o1 = instr.substring(4, index);
 		String o2 = instr.substring(index + 1);
-
 		if (cmd.equals("add")) {
 			int res = cdm.add(Integer.parseInt(o1), Integer.parseInt(o2));
 			System.out.println(res);

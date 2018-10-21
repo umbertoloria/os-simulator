@@ -8,16 +8,16 @@ public class ALU {
 		return new boolean[]{s, carryOut};
 	}
 
-	public static boolean and (boolean a, boolean b) {
+	public static boolean and(boolean a, boolean b) {
 		return a && b;
 	}
 
-	public static boolean or (boolean a, boolean b) {
+	public static boolean or(boolean a, boolean b) {
 		return a || b;
 	}
 
-	public static boolean not (boolean a) {
+	/*public static boolean not(boolean a) {
 		return !a;
-	}
+	}*/
 
 }

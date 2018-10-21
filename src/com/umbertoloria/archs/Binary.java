@@ -81,11 +81,11 @@ public class Binary {
 		return true;
 	}
 
-	public static boolean not(boolean[] a, boolean[] res) {
+	/*public static boolean not(boolean[] a, boolean[] res) {
 		for (int i = 0; i < a.length; i++) {
 			res[i] = ALU.not(a[i]);
 		}
 		return true;
-	}
+	}*/
 
 }
