@@ -39,14 +39,20 @@ public class VirtualMachine {
 	}
 
 	private void interpretate(String instr) {
-		String cmd = instr.substring(0, 3);
-		int index = instr.indexOf(" ", 4);
-		String o1 = instr.substring(4, index);
+		int first_space = instr.indexOf(" ");
+		String cmd = instr.substring(0, first_space);
+		int index = instr.indexOf(" ", first_space + 1);
+		String o1 = instr.substring(first_space + 1, index);
 		String o2 = instr.substring(index + 1);
+		int res = 0;
 		if (cmd.equals("add")) {
-			int res = cdm.add(Integer.parseInt(o1), Integer.parseInt(o2));
-			System.out.println(res);
+			res = cdm.add(Integer.parseInt(o1), Integer.parseInt(o2));
+		} else if (cmd.equals("and")) {
+			res = cdm.and(Integer.parseInt(o1), Integer.parseInt(o2));
+		} else if (cmd.equals("or")) {
+			res = cdm.or(Integer.parseInt(o1), Integer.parseInt(o2));
 		}
+		System.out.println(res);
 	}
 
 }

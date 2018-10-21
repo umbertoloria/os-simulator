@@ -27,4 +27,16 @@ public class CPUDriversManager {
 		return cd.getAN();
 	}
 
+	public int and(int a, int b) {
+		CPUDriver cd = getFree();
+		cd.instr(CPUDriver.AND, a, b);
+		return cd.getLN();
+	}
+
+	public int or(int a, int b) {
+		CPUDriver cd = getFree();
+		cd.instr(CPUDriver.OR, a, b);
+		return cd.getLN();
+	}
+
 }

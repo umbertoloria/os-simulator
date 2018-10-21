@@ -9,9 +9,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		Program p = new Program();
-		p.addInstr("add 5 3;");
-		p.addInstr("add 7 1;");
-		p.addInstr("add 2 3;");
+		p.addInstr("or 6 4;");
 
 		VirtualMachine vm = new VirtualMachine();
 		vm.setCoresCount(1);
