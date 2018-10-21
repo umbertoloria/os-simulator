@@ -1,6 +1,8 @@
 package com.umbertoloria;
 
-import com.umbertoloria.mips_project.mips.CPUDriversManager;
+import com.umbertoloria.mips_project.cpu.CPUDriversManager;
+import com.umbertoloria.program.Program;
+import com.umbertoloria.virtual_machine.VirtualMachine;
 
 import java.util.Random;
 
@@ -9,11 +11,18 @@ public class Main {
 	private static Random r = new Random();
 
 	public static void main(String[] args) {
-		CPUDriversManager a = new CPUDriversManager(1);
-		for (int i = 0; i < 10; i++) {
-			int res = a.add(r.nextInt(5), -5);
-			System.out.println(res);
-		}
+		Program p = new Program();
+		p.addInstr("add 5 3;");
+		p.addInstr("add 7 1;");
+		p.addInstr("add 2 3;");
+
+		VirtualMachine vm = new VirtualMachine();
+		vm.setCoresCount(1);
+		vm.setRAMSize(10);
+
+		vm.init();
+
+		vm.execute(p);
 	}
 
 	private static void sleep() {
