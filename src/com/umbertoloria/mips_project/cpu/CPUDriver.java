@@ -17,7 +17,7 @@ public class CPUDriver {
 		this.cpu = cpu;
 	}
 
-	public void pushBits (boolean[] bits) {
+	public void pushBits(boolean[] bits) {
 		for (boolean bit : bits) {
 			cpu.push(bit);
 		}
@@ -41,7 +41,7 @@ public class CPUDriver {
 		pushRandom(cpu.getArch());
 	}
 
-	public void instr (int type, int first, int second) {
+	public void instr(int type, int first, int second) {
 		if (type == AND) {
 			pushString("00");
 		} else if (type == OR) {
@@ -54,11 +54,11 @@ public class CPUDriver {
 		cpu.clock();
 	}
 
-	public int getAN () {
+	public int getAN() {
 		return Binary.toInt(cpu.getAR());
 	}
 
-	public int getLN () {
+	public int getLN() {
 		return Binary.toInt(cpu.getLR());
 	}
 
