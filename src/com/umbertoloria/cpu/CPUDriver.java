@@ -1,4 +1,4 @@
-package com.umbertoloria.mips_project.cpu;
+package com.umbertoloria.cpu;
 
 import com.umbertoloria.archs.Binary;
 
