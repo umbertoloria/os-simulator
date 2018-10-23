@@ -10,6 +10,15 @@ public class Program {
 	private List<String> ins = new LinkedList<>();
 	private int pc = 0;
 
+	public void addCompleteSource(String program) {
+		if (editing) {
+			program = program.replaceAll("\n", "");
+			program = program.replaceAll("\r", "");
+			src.append(program);
+			editing = false;
+		}
+	}
+
 	public void addInstr(String instr) {
 		if (editing) {
 			src.append(instr);
@@ -23,6 +32,7 @@ public class Program {
 		int istart = 0;
 		int iend = 0;
 		int index;
+
 		while ((index = src.indexOf(";", from)) >= 0) {
 			if (src.charAt(index - 1) != '\\') {
 				iend = index - 1;

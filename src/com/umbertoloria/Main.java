@@ -1,7 +1,11 @@
 package com.umbertoloria;
 
 import com.umbertoloria.program.Program;
+import com.umbertoloria.utils.FileLoader;
 import com.umbertoloria.virtual_machine.VirtualMachine;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 public class Main {
 
@@ -9,7 +13,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		Program p = new Program();
-		p.addInstr("or 6 4;");
+		p.addCompleteSource(FileLoader.getContent("program.u"));
 
 		VirtualMachine vm = new VirtualMachine();
 		vm.setCoresCount(1);
