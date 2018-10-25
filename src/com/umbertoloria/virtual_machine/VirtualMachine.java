@@ -2,6 +2,7 @@ package com.umbertoloria.virtual_machine;
 
 import com.umbertoloria.memory.RAM;
 import com.umbertoloria.cpu.CPUDriversManager;
+import com.umbertoloria.program.Instruction;
 import com.umbertoloria.program.Program;
 
 public class VirtualMachine {
@@ -29,30 +30,13 @@ public class VirtualMachine {
 
 	// Operations
 
-	public void execute(Program p) {
-		if (p.parse()) {
-			String instr;
+	public void execute(Program p, boolean verboose) {
+		if (p.parse(verboose)) {
+			Instruction instr;
 			while ((instr = p.nextInstr()) != null) {
-				interpretate(instr);
+				instr.execute(cdm, verboose);
 			}
 		}
-	}
-
-	private void interpretate(String instr) {
-		int first_space = instr.indexOf(" ");
-		String cmd = instr.substring(0, first_space);
-		int index = instr.indexOf(" ", first_space + 1);
-		String o1 = instr.substring(first_space + 1, index);
-		String o2 = instr.substring(index + 1);
-		int res = 0;
-		if (cmd.equals("add")) {
-			res = cdm.add(Integer.parseInt(o1), Integer.parseInt(o2));
-		} else if (cmd.equals("and")) {
-			res = cdm.and(Integer.parseInt(o1), Integer.parseInt(o2));
-		} else if (cmd.equals("or")) {
-			res = cdm.or(Integer.parseInt(o1), Integer.parseInt(o2));
-		}
-		System.out.println(res);
 	}
 
 }
