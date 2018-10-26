@@ -1,5 +1,8 @@
 package com.umbertoloria;
 
+import com.umbertoloria.archs.Binary;
+import com.umbertoloria.memory.RAM;
+import com.umbertoloria.memory.RAMManager;
 import com.umbertoloria.program.Program;
 import com.umbertoloria.utils.FileLoader;
 import com.umbertoloria.virtual_machine.VirtualMachine;
@@ -12,7 +15,7 @@ public class Main {
 
 		VirtualMachine vm = new VirtualMachine();
 		vm.setCoresCount(1);
-		//vm.setRAMSize(10);
+		vm.setRAMSize(10);
 
 		vm.init();
 

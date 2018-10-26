@@ -3,7 +3,7 @@ package com.umbertoloria.archs;
 public class Binary {
 
 	public static boolean[] toBools(String str) {
-		boolean[] bits = new boolean[str.length()];
+		boolean[] bits = new boolean[str.length()]; // TODO: strana la str.length()
 		for (int i = 0; i < bits.length; i++) {
 			bits[i] = str.charAt(i) == '1';
 		}
@@ -21,6 +21,7 @@ public class Binary {
 	public static boolean[] convert(int digit, int size) {
 		boolean[] bits = new boolean[size];
 		if (digit < -Math.pow(2, size - 1) || digit > Math.pow(2, size - 1) - 1) {
+			// TODO: maybe throw an exception!
 			return bits;
 		}
 		boolean complemento = digit < 0;

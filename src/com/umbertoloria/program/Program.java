@@ -20,6 +20,7 @@ public class Program {
 
 	public boolean parse(boolean verboose) {
 		editing = false;
+		boolean parse_operation_status = true;
 
 		if (verboose) {
 			System.out.println("-------------------------------");
@@ -27,7 +28,7 @@ public class Program {
 			System.out.println("-------------------------------");
 		}
 
-		instructions = ParserUtils.instructionsExploding(src);
+		instructions = ParserUtils.getExplodedInstructions(src);
 
 		if (instructions.size() == 0) {
 			if (verboose) {
@@ -45,22 +46,41 @@ public class Program {
 			boolean instruction_parsed;
 			for (int i = 0; i < instructions.size(); i++) {
 				instruction_parsed = instructions.get(i).parse();
-				System.out.print("[" + (instruction_parsed ? "DONE" : "FAIL") + "] ");
+				if (instruction_parsed) {
+					System.out.print("[DONE] ");
+				} else {
+					System.out.print("[");
+					System.err.print("FAIL");
+					System.out.print("] ");
+				}
 				System.out.printf("Parsing instruction %4d\n", i);
+				if (!instruction_parsed) {
+					parse_operation_status = false;
+					break;
+				}
 			}
 		} else {
 			for (Instruction instruction : instructions) {
-				instruction.parse();
+				if (!instruction.parse()) {
+					parse_operation_status = false;
+					break;
+				}
 			}
 		}
 
 		if (verboose) {
-			System.out.println("-------------------------------");
-			System.out.println("         Ending PARSE");
-			System.out.println("-------------------------------\n");
+			if (parse_operation_status) {
+				System.out.println("-------------------------------");
+				System.out.println("         Ending PARSE");
+				System.out.println("-------------------------------\n");
+			} else {
+				System.out.println("-------------------------------");
+				System.err.println("       PARSE interruption");
+				System.out.println("-------------------------------\n");
+			}
 		}
 
-		return true;
+		return parse_operation_status;
 	}
 
 	public Instruction nextInstr() {
@@ -70,9 +90,13 @@ public class Program {
 		return null;
 	}
 
-	@Override
 	public String toString() {
-		return src.toString();
+		StringBuilder res = new StringBuilder();
+		for (Instruction instruction : instructions) {
+			res.append(instruction.toString());
+			res.append("\n");
+		}
+		return res.toString();
 	}
 
 }

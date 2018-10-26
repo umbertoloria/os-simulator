@@ -1,5 +1,2 @@
-add 5 3
-add 7 8
-add 5 -4
-add 5 -5
-add -5 -1
+create @ris 1
+set @ris 7

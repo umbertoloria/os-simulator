@@ -1,16 +1,15 @@
 package com.umbertoloria.cpu;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class CPUDriversManager {
 
-	private List<CPUDriver> drivers = new ArrayList<>();
+	private ArrayList<CPUDriver> drivers = new ArrayList<>();
 
-	public CPUDriversManager(int cores_count) {
+	public CPUDriversManager(int architecture, int cores_count) {
 		CPU cpu;
 		for (int i = 0; i < cores_count; i++) {
-			cpu = new CPU(5);
+			cpu = new CPU(architecture);
 			drivers.add(new CPUDriver(cpu));
 		}
 	}
