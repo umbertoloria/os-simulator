@@ -1,6 +1,6 @@
 package com.umbertoloria.program.instructions;
 
-import com.umbertoloria.cpu.CPUDriversManager;
+import com.umbertoloria.alu.ALUManager;
 import com.umbertoloria.program.Instruction;
 import com.umbertoloria.utils.ParserUtils;
 
@@ -54,7 +54,7 @@ public class ALInstruction extends Instruction {
 		return true;
 	}
 
-	public void execute(CPUDriversManager cdm, boolean verboose) {
+	public void execute(ALUManager cdm, boolean verboose) {
 		if (verboose) {
 			System.out.print("[" + toString() + "] -> ");
 		}

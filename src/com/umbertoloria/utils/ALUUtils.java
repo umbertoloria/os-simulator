@@ -1,6 +1,6 @@
-package com.umbertoloria.archs;
+package com.umbertoloria.utils;
 
-public class ALU {
+public class ALUUtils {
 
 	public static boolean[] adder(boolean a, boolean b, boolean carryIn) {
 		boolean carryOut = (!a && b && carryIn) || (a && (b || carryIn));

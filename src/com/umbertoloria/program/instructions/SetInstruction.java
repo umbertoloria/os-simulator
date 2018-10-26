@@ -1,6 +1,6 @@
 package com.umbertoloria.program.instructions;
 
-import com.umbertoloria.memory.RamDriver;
+import com.umbertoloria.ram.RAMDriver;
 import com.umbertoloria.program.Instruction;
 import com.umbertoloria.utils.ParserUtils;
 
@@ -40,7 +40,7 @@ public class SetInstruction extends Instruction {
 		return true;
 	}
 
-	public void execute(RamDriver rm, boolean verboose) {
+	public void execute(RAMDriver rm, boolean verboose) {
 		if (verboose) {
 			System.out.println("[" + toString() + "]");
 		}

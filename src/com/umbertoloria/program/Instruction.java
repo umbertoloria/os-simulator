@@ -18,7 +18,7 @@ public abstract class Instruction {
 		} else if (codedInstr.startsWith("print")) {
 			return new PrintInstruction(codedInstr);
 		}
-		return null; // TODO: complete function
+		return null;
 	}
 
 	protected String codedInstr;

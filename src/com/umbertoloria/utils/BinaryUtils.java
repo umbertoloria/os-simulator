@@ -1,6 +1,6 @@
-package com.umbertoloria.archs;
+package com.umbertoloria.utils;
 
-public class Binaries {
+public class BinaryUtils {
 
 	public static boolean[] toBools(String str) {
 		boolean[] bits = new boolean[str.length()]; // TODO: strana la str.length()
@@ -18,11 +18,10 @@ public class Binaries {
 		return str.toString();
 	}
 
-	public static boolean[] convert(int digit, int size) {
+	public static boolean[] convert(int digit, int size) throws RuntimeException {
 		boolean[] bits = new boolean[size];
 		if (digit < -Math.pow(2, size - 1) || digit > Math.pow(2, size - 1) - 1) {
-			// TODO: maybe throw an exception!
-			return bits;
+			throw new RuntimeException(digit + " non rappresentabile in " + size + " bit.");
 		}
 		boolean complemento = digit < 0;
 		if (complemento) {
@@ -54,32 +53,25 @@ public class Binaries {
 		return res;
 	}
 
-	public static boolean add(boolean[] a, boolean[] b, boolean[] res) {
+	public static void add(boolean[] a, boolean[] b, boolean[] res) {
 		boolean carryIn = false;
 		for (int i = a.length - 1; i >= 0; i--) {
-			boolean[] added = ALU.adder(a[i], b[i], carryIn);
+			boolean[] added = ALUUtils.adder(a[i], b[i], carryIn);
 			res[i] = added[0];
 			carryIn = added[1];
 		}
-		// TODO: controllare l'Overflow
-		if (a[0] != a[1]) {
-			return !carryIn;
-		}
-		return true;
 	}
 
-	public static boolean and(boolean[] a, boolean[] b, boolean[] res) {
+	public static void and(boolean[] a, boolean[] b, boolean[] res) {
 		for (int i = 0; i < a.length; i++) {
-			res[i] = ALU.and(a[i], b[i]);
+			res[i] = ALUUtils.and(a[i], b[i]);
 		}
-		return true;
 	}
 
-	public static boolean or(boolean[] a, boolean[] b, boolean[] res) {
+	public static void or(boolean[] a, boolean[] b, boolean[] res) {
 		for (int i = 0; i < a.length; i++) {
-			res[i] = ALU.or(a[i], b[i]);
+			res[i] = ALUUtils.or(a[i], b[i]);
 		}
-		return true;
 	}
 
 	/*public static boolean not(boolean[] a, boolean[] res) {

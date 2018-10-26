@@ -1,7 +1,7 @@
 package com.umbertoloria.virtual_machine;
 
-import com.umbertoloria.cpu.CPUDriversManager;
-import com.umbertoloria.memory.RamDriver;
+import com.umbertoloria.alu.ALUManager;
+import com.umbertoloria.ram.RAMDriver;
 import com.umbertoloria.program.Instruction;
 import com.umbertoloria.program.Program;
 import com.umbertoloria.program.instructions.ALInstruction;
@@ -11,30 +11,15 @@ import com.umbertoloria.program.instructions.SetInstruction;
 
 public class VirtualMachine {
 
-	public static final int ARCHITECTURE = 10;
+	private static final int ARCHITECTURE = 10;
 
-	private int cores_count;
-	private int ram_size;
+	private ALUManager cdm;
+	private RAMDriver rd;
 
-	private CPUDriversManager cdm;
-	private RamDriver rd;
-
-	// Inits
-
-	public void setCoresCount(int cores_count) {
-		this.cores_count = cores_count;
+	public VirtualMachine (int ram_size) {
+		cdm = new ALUManager(ARCHITECTURE);
+		rd = new RAMDriver(ARCHITECTURE, ram_size);
 	}
-
-	public void setRAMSize(int ram_size) {
-		this.ram_size = ram_size;
-	}
-
-	public void init() {
-		cdm = new CPUDriversManager(ARCHITECTURE, cores_count);
-		rd = new RamDriver(ARCHITECTURE, ram_size);
-	}
-
-	// Operations
 
 	public void execute(Program p, boolean verboose) {
 		if (p.parse(verboose)) {

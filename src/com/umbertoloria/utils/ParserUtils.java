@@ -4,7 +4,6 @@ import com.umbertoloria.program.Instruction;
 
 import java.util.ArrayList;
 
-
 /**
  * Le stringhe che si passato ai getTokens non devono avere spazi a sinistra.
  * // TODO: check se anche a destra (penso di no).
