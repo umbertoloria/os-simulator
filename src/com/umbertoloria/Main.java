@@ -1,8 +1,6 @@
 package com.umbertoloria;
 
-import com.umbertoloria.archs.Binary;
-import com.umbertoloria.memory.RAM;
-import com.umbertoloria.memory.RAMManager;
+import com.umbertoloria.memory.RamDriver;
 import com.umbertoloria.program.Program;
 import com.umbertoloria.utils.FileLoader;
 import com.umbertoloria.virtual_machine.VirtualMachine;
@@ -19,7 +17,7 @@ public class Main {
 
 		vm.init();
 
-		vm.execute(p, true);
+		vm.execute(p, false);
 
 	}
 

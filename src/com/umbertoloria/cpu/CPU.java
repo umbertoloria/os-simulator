@@ -1,6 +1,6 @@
 package com.umbertoloria.cpu;
 
-import com.umbertoloria.archs.Binary;
+import com.umbertoloria.archs.Binaries;
 
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -40,21 +40,21 @@ public class CPU/* extends Daemon*/ {
 	}
 
 	private void parseInstruction(boolean[] bits) {
-		String instr = Binary.toStr(bits);
+		String instr = Binaries.toStr(bits);
 
-		boolean[] first = Binary.toBools(instr.substring(2, arch + 2));
-		boolean[] second = Binary.toBools(instr.substring(2 + arch, instr_length));
+		boolean[] first = Binaries.toBools(instr.substring(2, arch + 2));
+		boolean[] second = Binaries.toBools(instr.substring(2 + arch, instr_length));
 
 		if (instr.startsWith("00")) {
-			if (!Binary.and(first, second, lr)) {
+			if (!Binaries.and(first, second, lr)) {
 				overflows++;
 			}
 		} else if (instr.startsWith("01")) {
-			if (!Binary.or(first, second, lr)) {
+			if (!Binaries.or(first, second, lr)) {
 				overflows++;
 			}
 		} else if (instr.startsWith("10")) {
-			if (!Binary.add(first, second, ar)) {
+			if (!Binaries.add(first, second, ar)) {
 				overflows++;
 			}
 		} else {

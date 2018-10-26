@@ -1,14 +1,13 @@
 package com.umbertoloria.virtual_machine;
 
 import com.umbertoloria.cpu.CPUDriversManager;
-import com.umbertoloria.memory.RAMManager;
+import com.umbertoloria.memory.RamDriver;
 import com.umbertoloria.program.Instruction;
 import com.umbertoloria.program.Program;
 import com.umbertoloria.program.instructions.ALInstruction;
 import com.umbertoloria.program.instructions.CreateInstruction;
+import com.umbertoloria.program.instructions.PrintInstruction;
 import com.umbertoloria.program.instructions.SetInstruction;
-
-import java.util.AbstractList;
 
 public class VirtualMachine {
 
@@ -18,7 +17,7 @@ public class VirtualMachine {
 	private int ram_size;
 
 	private CPUDriversManager cdm;
-	private RAMManager rm;
+	private RamDriver rd;
 
 	// Inits
 
@@ -32,7 +31,7 @@ public class VirtualMachine {
 
 	public void init() {
 		cdm = new CPUDriversManager(ARCHITECTURE, cores_count);
-		rm = new RAMManager(ARCHITECTURE, ram_size);
+		rd = new RamDriver(ARCHITECTURE, ram_size);
 	}
 
 	// Operations
@@ -44,9 +43,11 @@ public class VirtualMachine {
 				if (instr instanceof ALInstruction) {
 					((ALInstruction) instr).execute(cdm, verboose);
 				} else if (instr instanceof CreateInstruction) {
-					((CreateInstruction) instr).execute(rm, verboose);
+					((CreateInstruction) instr).execute(rd, verboose);
 				} else if (instr instanceof SetInstruction) {
-					((SetInstruction) instr).execute(rm, verboose);
+					((SetInstruction) instr).execute(rd, verboose);
+				} else if (instr instanceof PrintInstruction) {
+					((PrintInstruction) instr).execute(rd, verboose);
 				} else {
 					System.err.println("Istruzione saltata!");
 				}

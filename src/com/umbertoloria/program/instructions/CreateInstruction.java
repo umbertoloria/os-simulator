@@ -1,7 +1,6 @@
 package com.umbertoloria.program.instructions;
 
-import com.umbertoloria.memory.RAM;
-import com.umbertoloria.memory.RAMManager;
+import com.umbertoloria.memory.RamDriver;
 import com.umbertoloria.program.Instruction;
 import com.umbertoloria.utils.ParserUtils;
 
@@ -45,15 +44,15 @@ public class CreateInstruction extends Instruction {
 		return true;
 	}
 
-	public void execute(RAMManager rm, boolean verboose) {
+	public void execute(RamDriver rm, boolean verboose) {
 		if (verboose) {
 			System.out.println("[" + toString() + "]");
 		}
 		// TODO: return true of false
 		if (length == 1) {
-			rm.createVariable(varName);
+			rm.create(varName);
 		} else {
-			rm.createArray(varName, length);
+			rm.create(varName, length);
 		}
 	}
 

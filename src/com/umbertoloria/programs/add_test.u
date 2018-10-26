@@ -1,2 +1,3 @@
-create @ris 1
-set @ris 7
+create @pippo 1
+set @pippo 7
+print @pippo

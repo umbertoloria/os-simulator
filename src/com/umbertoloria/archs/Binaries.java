@@ -1,6 +1,6 @@
 package com.umbertoloria.archs;
 
-public class Binary {
+public class Binaries {
 
 	public static boolean[] toBools(String str) {
 		boolean[] bits = new boolean[str.length()]; // TODO: strana la str.length()

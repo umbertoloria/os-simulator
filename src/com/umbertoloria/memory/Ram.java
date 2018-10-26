@@ -1,25 +1,34 @@
 package com.umbertoloria.memory;
 
 import java.util.Hashtable;
-import java.util.LinkedList;
 
-public class RAM {
-
-	private int length;
-	private int architecture;
+public class Ram {
 
 	private boolean[] memory;
-	private Hashtable<String, int[]> variables = new Hashtable<>();
-	private int firstAddr = 0;
 
-
-	public RAM(int architecture, int length) {
-		this.architecture = architecture;
-		this.length = length;
-		memory = new boolean[architecture * length];
+	public Ram(int size) {
+		memory = new boolean[size];
 	}
 
-	public void createVariables(String varName, int length) {
+	public boolean[] read(int addr, int size) {
+		boolean[] res = new boolean[size];
+		for (int i = 0; i < size; i++) {
+			res[i] = memory[addr + i];
+		}
+		return res;
+	}
+
+	public void write(int addr, boolean[] save) {
+		for (int i = 0; i < save.length; i++) {
+			memory[addr + i] = save[i];
+		}
+	}
+
+	public int size() {
+		return memory.length;
+	}
+
+	/*public void createVariables(String varName, int length) {
 		if (firstAddr + architecture * length < memory.length) {
 			variables.put(varName, new int[]{firstAddr, architecture * length});
 			firstAddr += architecture * length;
@@ -47,7 +56,7 @@ public class RAM {
 				memory[variableControlBlock[0] + offset * architecture + i] = save[i];
 			}
 		}
-	}
+	}*/
 
 	public void print() {
 		for (boolean b : memory) {
@@ -56,50 +65,21 @@ public class RAM {
 		System.out.println();
 	}
 
-	private void print(int start, int end) {
+	public void print(int start, int size) {
 		for (int i = 0; i < start; i++) {
 			System.out.print(" ");
 		}
-		for (int i = start; i < end; i++) {
-			System.out.print(memory[i] ? "1" : "0");
+		for (int i = 0; i < size; i++) {
+			System.out.print(memory[start + i] ? "1" : "0");
 		}
 		System.out.println();
 	}
 
-	public void printVariable(String variable) {
+	/*public void printVariable(String variable) {
 		int[] data = variables.get(variable);
 		if (data != null) {
 			print(data[0], data[0] + data[1]);
 		}
-	}
+	}*/
 
 }
-
-
-/*class VariableControlBlock {
-
-	private String variable;
-	private int firstAddr;
-	private int length;
-
-	VariableControlBlock(String variable, int firstAddr, int length) {
-		this.variable = variable;
-		this.firstAddr = firstAddr;
-		this.length = length;
-	}
-
-}
-
-class FreeMemoryControlBlock {
-
-	private int start, end;
-
-	FreeMemoryControlBlock (int start, int end) {
-		this.start = start;
-		this.end = end;
-	}
-
-	public void
-}*/
-
-// TODO: test se sono visibilit fuori dalla classe (o dal package)

@@ -1,6 +1,6 @@
 package com.umbertoloria.cpu;
 
-import com.umbertoloria.archs.Binary;
+import com.umbertoloria.archs.Binaries;
 
 import java.util.Random;
 
@@ -24,11 +24,11 @@ public class CPUDriver {
 	}
 
 	public void pushString(String str) {
-		pushBits(Binary.toBools(str));
+		pushBits(Binaries.toBools(str));
 	}
 
 	public void pushNumber(int number) {
-		pushBits(Binary.convert(number, cpu.getArch()));
+		pushBits(Binaries.convert(number, cpu.getArch()));
 	}
 
 	public void pushRandom(int length) {
@@ -55,11 +55,11 @@ public class CPUDriver {
 	}
 
 	public int getAN() {
-		return Binary.toInt(cpu.getAR());
+		return Binaries.toInt(cpu.getAR());
 	}
 
 	public int getLN() {
-		return Binary.toInt(cpu.getLR());
+		return Binaries.toInt(cpu.getLR());
 	}
 
 }

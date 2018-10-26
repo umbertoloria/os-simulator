@@ -2,6 +2,7 @@ package com.umbertoloria.program;
 
 import com.umbertoloria.program.instructions.ALInstruction;
 import com.umbertoloria.program.instructions.CreateInstruction;
+import com.umbertoloria.program.instructions.PrintInstruction;
 import com.umbertoloria.program.instructions.SetInstruction;
 
 public abstract class Instruction {
@@ -14,6 +15,8 @@ public abstract class Instruction {
 			return new CreateInstruction(codedInstr);
 		} else if (codedInstr.startsWith("set")) {
 			return new SetInstruction(codedInstr);
+		} else if (codedInstr.startsWith("print")) {
+			return new PrintInstruction(codedInstr);
 		}
 		return null; // TODO: complete function
 	}
