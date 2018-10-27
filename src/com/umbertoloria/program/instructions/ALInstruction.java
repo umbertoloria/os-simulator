@@ -18,13 +18,7 @@ public class ALInstruction extends Instruction {
 	}
 
 	public boolean parse() {
-		// TODO: sistemare il parsing
-		if (!codedInstr.startsWith("and") && !codedInstr.startsWith("or") && !codedInstr.startsWith("add")) {
-			return false;
-		}
-
 		int tmpType = 0;
-		String[] tokens = new String[2];
 		int[] operands = new int[2];
 
 		String partialInstr = codedInstr;
@@ -40,12 +34,21 @@ public class ALInstruction extends Instruction {
 			partialInstr = partialInstr.substring(4).trim();
 		}
 
-		tokens[0] = ParserUtils.getFirstNumericToken(partialInstr);
-		operands[0] = Integer.parseInt(tokens[0]); // try
-		partialInstr = partialInstr.substring(tokens[0].length() + 1).trim(); // one space at least
+		try {
+			operands[0] = ParserUtils.getFirstNumericToken(partialInstr);
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+			return false;
+		}
 
-		tokens[1] = partialInstr;
-		operands[1] = Integer.parseInt(tokens[1]); // try
+		partialInstr = partialInstr.substring((operands[0] + "").length() + 1).trim(); // one space at least
+
+		try {
+			operands[1] = ParserUtils.getFirstNumericToken(partialInstr);
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+			return false;
+		}
 
 		type = tmpType;
 		a = operands[0];

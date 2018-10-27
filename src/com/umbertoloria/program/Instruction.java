@@ -1,9 +1,7 @@
 package com.umbertoloria.program;
 
 import com.umbertoloria.program.instructions.ALInstruction;
-import com.umbertoloria.program.instructions.CreateInstruction;
-import com.umbertoloria.program.instructions.PrintInstruction;
-import com.umbertoloria.program.instructions.SetInstruction;
+import com.umbertoloria.program.instructions.VarInstruction;
 
 public abstract class Instruction {
 
@@ -11,12 +9,8 @@ public abstract class Instruction {
 		codedInstr = codedInstr.trim();
 		if (codedInstr.startsWith("and") || codedInstr.startsWith("or") || codedInstr.startsWith("add")) {
 			return new ALInstruction(codedInstr);
-		} else if (codedInstr.startsWith("create")) {
-			return new CreateInstruction(codedInstr);
-		} else if (codedInstr.startsWith("set")) {
-			return new SetInstruction(codedInstr);
-		} else if (codedInstr.startsWith("print")) {
-			return new PrintInstruction(codedInstr);
+		} else if (codedInstr.startsWith("create") || codedInstr.startsWith("set") || codedInstr.startsWith("print")) {
+			return new VarInstruction(codedInstr);
 		}
 		return null;
 	}

@@ -4,29 +4,9 @@ import com.umbertoloria.program.Instruction;
 
 import java.util.ArrayList;
 
-/**
- * Le stringhe che si passato ai getTokens non devono avere spazi a sinistra.
- * // TODO: check se anche a destra (penso di no).
- */
 public class ParserUtils {
 
-	public static String getFirstAlphanumericToken(String str) {
-		int i;
-		char tmp;
-		for (i = 0; i < str.length(); i++) {
-			tmp = str.charAt(i);
-			if ('0' > tmp || tmp > '9') {
-				if ('A' > tmp || tmp > 'Z') {
-					if ('a' > tmp || tmp > 'z') {
-						break;
-					}
-				}
-			}
-		}
-		return str.substring(0, i);
-	}
-
-	public static String getFirstAlphabeticToken(String str) {
+	private static String getFirstAlphabeticToken(String str) throws Exception {
 		int i;
 		char tmp;
 		for (i = 0; i < str.length(); i++) {
@@ -37,21 +17,24 @@ public class ParserUtils {
 				}
 			}
 		}
+		if (i == 0) {
+			throw new Exception("Parola non valida");
+		}
 		return str.substring(0, i);
 	}
 
-	public static String getFirstVariableToken(String str) {
+	public static String getFirstVariableToken(String str) throws Exception {
 		if (str.charAt(0) != '@') {
-			return "";
+			throw new Exception("@ non presente");
 		}
-		String restName = getFirstAlphabeticToken(str.substring(1));
-		if (restName.isEmpty()) {
-			return "";
+		try {
+			return "@" + getFirstAlphabeticToken(str.substring(1));
+		} catch (Exception e) {
+			throw new Exception("Nome variabile vuoto");
 		}
-		return "@"+restName;
 	}
 
-	public static String getFirstNumericToken(String str) {
+	public static int getFirstNumericToken(String str) throws Exception {
 		int i;
 		char tmp;
 		for (i = 0; i < str.length(); i++) {
@@ -62,7 +45,11 @@ public class ParserUtils {
 				}
 			}
 		}
-		return str.substring(0, i);
+		try {
+			return Integer.parseInt(str.substring(0, i));
+		} catch (NumberFormatException e) {
+			throw new Exception("Intero non valido");
+		}
 	}
 
 	public static ArrayList<Instruction> getExplodedInstructions(StringBuilder src) {
