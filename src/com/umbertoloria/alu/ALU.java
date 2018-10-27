@@ -21,8 +21,9 @@ public class ALU {
 		lr = new boolean[arch];
 	}
 
-	// Operations
-
+	/**
+	 Interprets an ARCH-sized instruction taken from the top of the Instruction Queue thanks to parseInstruction.
+	 */
 	void clock() {
 		if (coda.size() >= instr_length) {
 			boolean[] bits = new boolean[instr_length];
@@ -35,12 +36,14 @@ public class ALU {
 		}
 	}
 
+	/**
+	 Interprets an ARCH-sized instruction.
+	 @param bits composes the instruction
+	 */
 	private void parseInstruction(boolean[] bits) {
 		String instr = BinaryUtils.toStr(bits);
-
 		boolean[] first = BinaryUtils.toRawBools(instr.substring(2, arch + 2));
 		boolean[] second = BinaryUtils.toRawBools(instr.substring(2 + arch, instr_length));
-
 		if (instr.startsWith("00")) {
 			BinaryUtils.and(first, second, lr);
 		} else if (instr.startsWith("01")) {
@@ -50,29 +53,42 @@ public class ALU {
 		}
 	}
 
+	/**
+	 Puts a bit on the Instruction Queue.
+	 @param bit to put
+	 */
 	void push(boolean bit) {
 		coda.add(bit);
 	}
 
-	// Getters
-
-	int getArch() {
-		return arch;
-	}
-
+	/**
+	 Gets the value of the Arithmetic Register.
+	 @return bits contained in the AR
+	 */
 	boolean[] getAR() {
 		while (processing) {
 			Thread.onSpinWait();
 		}
-		// FIXME: return r1.clone();
-		return ar;
+		return ar.clone();
 	}
 
+	/**
+	 Gets the value of the Logic Register.
+	 @return bits contained in the LR
+	 */
 	boolean[] getLR() {
 		while (processing) {
 			Thread.onSpinWait();
 		}
-		// FIXME: return r1.clone();
-		return lr;
+		return lr.clone();
 	}
+
+	/**
+	 Gets the ARCH of the ALU.
+	 @return arch
+	 */
+	int getArch() {
+		return arch;
+	}
+
 }
