@@ -11,7 +11,7 @@ public class Main {
 		Program p = new Program(FileLoader.getContent("add_test.u"));
 
 		VirtualMachine vm = new VirtualMachine(10);
-		vm.execute(p, true);
+		vm.execute(p, false);
 
 	}
 

@@ -24,7 +24,7 @@ class ALUDriver {
 	}
 
 	private void pushString(String str) {
-		pushBits(BinaryUtils.toBools(str));
+		pushBits(BinaryUtils.toRawBools(str));
 	}
 
 	private void pushNumber(int number) {

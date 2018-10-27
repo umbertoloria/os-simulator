@@ -38,8 +38,8 @@ public class ALU {
 	private void parseInstruction(boolean[] bits) {
 		String instr = BinaryUtils.toStr(bits);
 
-		boolean[] first = BinaryUtils.toBools(instr.substring(2, arch + 2));
-		boolean[] second = BinaryUtils.toBools(instr.substring(2 + arch, instr_length));
+		boolean[] first = BinaryUtils.toRawBools(instr.substring(2, arch + 2));
+		boolean[] second = BinaryUtils.toRawBools(instr.substring(2 + arch, instr_length));
 
 		if (instr.startsWith("00")) {
 			BinaryUtils.and(first, second, lr);
@@ -64,7 +64,7 @@ public class ALU {
 		while (processing) {
 			Thread.onSpinWait();
 		}
-		// TODO: return r1.clone();
+		// FIXME: return r1.clone();
 		return ar;
 	}
 
@@ -72,7 +72,7 @@ public class ALU {
 		while (processing) {
 			Thread.onSpinWait();
 		}
-		// TODO: return r1.clone();
+		// FIXME: return r1.clone();
 		return lr;
 	}
 }

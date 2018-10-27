@@ -22,23 +22,4 @@ class RAM {
 		return memory.length;
 	}
 
-	// TODO: Rimuovere
-
-	void print() {
-		for (boolean b : memory) {
-			System.out.print(b ? "1" : "0");
-		}
-		System.out.println();
-	}
-
-	void print(int start, int size) {
-		for (int i = 0; i < start; i++) {
-			System.out.print(" ");
-		}
-		for (int i = 0; i < size; i++) {
-			System.out.print(memory[start + i] ? "1" : "0");
-		}
-		System.out.println();
-	}
-
 }

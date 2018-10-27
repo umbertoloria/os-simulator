@@ -2,14 +2,6 @@ package com.umbertoloria.utils;
 
 public class BinaryUtils {
 
-	public static boolean[] toBools(String str) {
-		boolean[] bits = new boolean[str.length()]; // TODO: strana la str.length()
-		for (int i = 0; i < bits.length; i++) {
-			bits[i] = str.charAt(i) == '1';
-		}
-		return bits;
-	}
-
 	public static String toStr(boolean[] n) {
 		StringBuilder str = new StringBuilder();
 		for (boolean c : n) {
@@ -74,7 +66,16 @@ public class BinaryUtils {
 		}
 	}
 
-	/*public static boolean not(boolean[] a, boolean[] res) {
+	public static boolean[] toRawBools(String str) {
+		boolean[] bits = new boolean[str.length()];
+		for (int i = 0; i < bits.length; i++) {
+			bits[i] = str.charAt(i) == '1';
+		}
+		return bits;
+	}
+
+	/* TODO: add NOT
+	public static boolean not(boolean[] a, boolean[] res) {
 		for (int i = 0; i < a.length; i++) {
 			res[i] = ALU.not(a[i]);
 		}

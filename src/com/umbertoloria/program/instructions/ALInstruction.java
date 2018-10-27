@@ -61,7 +61,7 @@ public class ALInstruction extends Instruction {
 		if (verboose) {
 			System.out.print("[" + toString() + "] -> ");
 		}
-		int res = 0; // TODO: remove = 0
+		int res = 0;
 		if (type == AND) {
 			res = cdm.and(a, b);
 		} else if (type == OR) {
@@ -69,7 +69,9 @@ public class ALInstruction extends Instruction {
 		} else if (type == ADD) {
 			res = cdm.add(a, b);
 		}
-		System.out.println(res); // TODO: gestire il risultato
+		if (verboose) {
+			System.out.println(res);
+		}
 	}
 
 	public String getOperation() {

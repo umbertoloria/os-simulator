@@ -21,7 +21,7 @@ public class RAMDriver {
 			variables.put(var, new int[]{firstAddr, arch});
 			firstAddr += arch;
 		} else {
-			// TODO: error! verificare se è davvero sempre così!
+			// FIXME: error! verificare se è davvero sempre così!
 		}
 	}
 
@@ -30,7 +30,7 @@ public class RAMDriver {
 			variables.put(var, new int[]{firstAddr, arch * length});
 			firstAddr += arch * length;
 		} else {
-			// TODO: error! verificare se è davvero sempre così!
+			// FIXME: error! verificare se è davvero sempre così!
 		}
 	}
 
@@ -40,7 +40,7 @@ public class RAMDriver {
 		if (info != null) {
 			ram.write(info[0], save);
 		} else {
-			// TODO: error! sincronizzare size save con arch
+			// FIXME: error! sincronizzare size save con arch
 		}
 	}
 
@@ -53,7 +53,7 @@ public class RAMDriver {
 				ram.write(addr, save);
 			}
 		} else {
-			// TODO: error! sincronizzare size save con arch
+			// FIXME: error! sincronizzare size save con arch
 		}
 	}
 
@@ -63,7 +63,7 @@ public class RAMDriver {
 			boolean[] val = ram.read(info[0], arch);
 			return BinaryUtils.toInt(val);
 		}
-		// TODO: capire bene cosa fare se non legge
+		// FIXME: capire bene cosa fare se non legge
 		return 0;
 	}
 
@@ -73,21 +73,8 @@ public class RAMDriver {
 			boolean[] val = ram.read(info[0] + offset * arch, arch);
 			return BinaryUtils.toInt(val);
 		}
-		// TODO: capire bene cosa fare se non legge
+		// FIXME: capire bene cosa fare se non legge
 		return 0;
-	}
-
-	// TODO: Rimuovere
-
-	public void printAll() {
-		ram.print();
-	}
-
-	public void printVariable(String var) {
-		int[] info = variables.get(var);
-		if (info != null) {
-			ram.print(info[0], info[1]);
-		}
 	}
 
 }

@@ -52,7 +52,7 @@ public class VarInstruction extends Instruction {
 				return false;
 			}
 
-			if (tmpType == CREATE && tmpNumber < 1) { // TODO: test this
+			if (tmpType == CREATE && tmpNumber < 1) {
 				System.err.println("Minimo 1 elementi in una variabile");
 				return false;
 			}
@@ -72,7 +72,7 @@ public class VarInstruction extends Instruction {
 			if (verboose) {
 				System.out.println("[" + toString() + "]");
 			}
-			// TODO: return true of false
+			// TODO: Gestire problema "memoria piena"
 			if (number == 1) {
 				rm.create(varName);
 			} else {
