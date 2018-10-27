@@ -3,11 +3,11 @@ package com.umbertoloria.program;
 import com.umbertoloria.utils.ParserUtils;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
-public class Program {
+public class Program implements Iterator<Instruction> {
 
 	private StringBuilder src;
-	private boolean editing = true;
 	private ArrayList<Instruction> instructions;
 	private int pc = 0;
 
@@ -15,11 +15,9 @@ public class Program {
 		program = program.replaceAll("\r", "");
 		program = program.replaceAll("\t", "");
 		src = new StringBuilder(program);
-		editing = false;
 	}
 
 	public boolean parse(boolean verboose) {
-		editing = false;
 		boolean parse_operation_status = true;
 
 		if (verboose) {
@@ -83,11 +81,12 @@ public class Program {
 		return parse_operation_status;
 	}
 
-	public Instruction nextInstr() {
-		if (!editing && instructions.size() > pc) {
-			return instructions.get(pc++);
-		}
-		return null;
+	public boolean hasNext() {
+		return pc < instructions.size();
+	}
+
+	public Instruction next() {
+		return instructions.get(pc++);
 	}
 
 	public String toString() {
@@ -98,5 +97,6 @@ public class Program {
 		}
 		return res.toString();
 	}
+
 
 }

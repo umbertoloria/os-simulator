@@ -22,7 +22,8 @@ public class VirtualMachine {
 	public void execute(Program p, boolean verboose) {
 		if (p.parse(verboose)) {
 			Instruction instr;
-			while ((instr = p.nextInstr()) != null) {
+			while (p.hasNext()) {
+				instr = p.next();
 				if (instr instanceof ALInstruction) {
 					((ALInstruction) instr).execute(cdm, verboose);
 				} else if (instr instanceof VarInstruction) {
