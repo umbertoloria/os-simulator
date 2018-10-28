@@ -1,0 +1,42 @@
+use 8
+set MR 50
+store #0 0    // level = 17
+set MR 0
+store #1 0     // i = 0
+set MR 1
+store #2 0     // a[0] = 1
+set MR 3
+store #2 1     // a[1] = 3
+set MR 2
+store #2 2     // a[2] = 2
+set MR 5
+store #2 3     // a[3] = 5
+set MR 6
+store #2 4     // a[4] = 6
+set MR 0
+store #7 0     // max = 0
+load #1 0      // MR = i
+low MR 5       // CR = MR < 5
+gotf CR @33    // if !(i<5) fine blocco
+load #1 0      // MR = i
+load #2 MR     // MR = a[MR]
+set OR1 MR     // OR1 = MR
+load #7 0      // MR = max
+add OR1 MR     // AR = OR1 + MR
+set MR AR      // MR = AR
+store #7 0     // max = MR
+load #1 0      // MR = i
+add MR 1       // AR = MR + 1
+set MR AR      // MR = AR
+store #1 0     // i = MR
+goto @18
+load #0 0      // MR = level
+set OR1 MR     // OR1 = MR
+load #7 0      // MR = max
+gre OR1 MR     // CR = level > max
+load #7 0
+gotv CR @41
+print "Array_grande"
+goto @42
+print "Array_piccolo"
+exit

@@ -1,6 +1,6 @@
 package com.umbertoloria.utils;
 
-import com.umbertoloria.program.Instruction;
+import com.umbertoloria.vecchi.program.Instruction;
 
 import java.util.ArrayList;
 

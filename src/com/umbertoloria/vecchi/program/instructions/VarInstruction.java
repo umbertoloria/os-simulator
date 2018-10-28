@@ -1,7 +1,7 @@
-package com.umbertoloria.program.instructions;
+package com.umbertoloria.vecchi.program.instructions;
 
-import com.umbertoloria.program.Instruction;
-import com.umbertoloria.ram.RAMDriver;
+import com.umbertoloria.vecchi.program.Instruction;
+import com.umbertoloria.vecchi.ram.RAMDriver;
 import com.umbertoloria.utils.ParserUtils;
 
 public class VarInstruction extends Instruction {

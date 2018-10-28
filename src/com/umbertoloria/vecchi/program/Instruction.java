@@ -1,7 +1,7 @@
-package com.umbertoloria.program;
+package com.umbertoloria.vecchi.program;
 
-import com.umbertoloria.program.instructions.ALInstruction;
-import com.umbertoloria.program.instructions.VarInstruction;
+import com.umbertoloria.vecchi.program.instructions.ALInstruction;
+import com.umbertoloria.vecchi.program.instructions.VarInstruction;
 
 public abstract class Instruction {
 

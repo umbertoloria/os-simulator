@@ -1,4 +1,4 @@
-package com.umbertoloria.ram;
+package com.umbertoloria.vecchi.ram;
 
 import com.umbertoloria.utils.BinaryUtils;
 

@@ -45,6 +45,14 @@ public class BinaryUtils {
 		return res;
 	}
 
+	public static int toAbsInt(boolean[] bits) {
+		int res = 0;
+		for (int i = 0; i < bits.length; i++) {
+			res += (int) Math.pow(2, bits.length - 1 - i) * (bits[i] ? 1 : 0);
+		}
+		return res;
+	}
+
 	public static void add(boolean[] a, boolean[] b, boolean[] res) {
 		boolean carryIn = false;
 		for (int i = a.length - 1; i >= 0; i--) {

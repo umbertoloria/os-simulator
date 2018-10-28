@@ -1,4 +1,4 @@
-package com.umbertoloria.alu;
+package com.umbertoloria.vecchi.alu;
 
 public class ALUManager {
 

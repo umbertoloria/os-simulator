@@ -1,0 +1,14 @@
+use 1
+set MR 5
+store #0 0
+load #0 0
+low MR 0
+gotf CR @9
+print "negativo"
+goto @14
+loweq MR 3
+gotf CR @13
+print "0<n<=3"
+goto @14
+print "maggiore_3"
+exit

@@ -16,8 +16,8 @@ public class ALUUtils {
 		return a || b;
 	}
 
-	/*public static boolean not(boolean a) {
+	public static boolean not(boolean a) {
 		return !a;
-	}*/
+	}
 
 }

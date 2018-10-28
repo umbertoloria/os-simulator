@@ -1,11 +1,11 @@
-package com.umbertoloria.virtual_machine;
+package com.umbertoloria.vecchi.virtual_machine;
 
-import com.umbertoloria.alu.ALUManager;
-import com.umbertoloria.program.Instruction;
-import com.umbertoloria.program.Program;
-import com.umbertoloria.program.instructions.ALInstruction;
-import com.umbertoloria.program.instructions.VarInstruction;
-import com.umbertoloria.ram.RAMDriver;
+import com.umbertoloria.vecchi.alu.ALUManager;
+import com.umbertoloria.vecchi.program.Instruction;
+import com.umbertoloria.vecchi.program.Program;
+import com.umbertoloria.vecchi.program.instructions.ALInstruction;
+import com.umbertoloria.vecchi.program.instructions.VarInstruction;
+import com.umbertoloria.vecchi.ram.RAMDriver;
 
 public class VirtualMachine {
 

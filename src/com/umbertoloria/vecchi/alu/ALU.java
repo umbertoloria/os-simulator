@@ -1,4 +1,4 @@
-package com.umbertoloria.alu;
+package com.umbertoloria.vecchi.alu;
 
 import com.umbertoloria.utils.BinaryUtils;
 
@@ -62,7 +62,7 @@ public class ALU {
 	}
 
 	/**
-	 Gets the value of the Arithmetic Register.
+	 Gets the value of the Arithmetical Register.
 	 @return bits contained in the AR
 	 */
 	boolean[] getAR() {
@@ -73,7 +73,7 @@ public class ALU {
 	}
 
 	/**
-	 Gets the value of the Logic Register.
+	 Gets the value of the Logical Register.
 	 @return bits contained in the LR
 	 */
 	boolean[] getLR() {

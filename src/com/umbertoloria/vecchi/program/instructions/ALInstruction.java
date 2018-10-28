@@ -1,7 +1,7 @@
-package com.umbertoloria.program.instructions;
+package com.umbertoloria.vecchi.program.instructions;
 
-import com.umbertoloria.alu.ALUManager;
-import com.umbertoloria.program.Instruction;
+import com.umbertoloria.vecchi.alu.ALUManager;
+import com.umbertoloria.vecchi.program.Instruction;
 import com.umbertoloria.utils.ParserUtils;
 
 public class ALInstruction extends Instruction {
