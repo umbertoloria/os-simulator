@@ -1,7 +1,5 @@
 package com.umbertoloria.utils;
 
-import com.umbertoloria.vecchi.program.Instruction;
-
 import java.util.ArrayList;
 
 public class ParserUtils {
@@ -52,7 +50,7 @@ public class ParserUtils {
 		}
 	}
 
-	public static ArrayList<Instruction> getExplodedInstructions(StringBuilder src) {
+	/*public static ArrayList<Instruction> getExplodedInstructions(StringBuilder src) {
 		int from = 0;
 		int istart = 0;
 		int iend = 0;
@@ -74,6 +72,6 @@ public class ParserUtils {
 			instructions.add(Instruction.load(src.substring(istart, src.length())));
 		}
 		return instructions;
-	}
+	}*/
 
 }

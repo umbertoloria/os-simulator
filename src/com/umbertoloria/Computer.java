@@ -6,15 +6,21 @@ import java.util.Arrays;
 
 public class Computer {
 
-	private int arch;
+	//private int arch;
 	private Registers regs;
 	private ALU alu;
 	private boolean[] instr;
+	private int instr_length;
 
-	public Computer(int arch, String ins) {
-		this.arch = arch;
+	public Computer(int arch) {
+		//this.arch = arch;
 		regs = new Registers(arch);
 		alu = new ALU(arch);
+		//instr = BinaryUtils.toRawBools(ins);
+		instr_length = 7 + 2 * arch;
+	}
+
+	public void setInstr (String ins) {
 		instr = BinaryUtils.toRawBools(ins);
 	}
 
@@ -39,24 +45,34 @@ public class Computer {
 	public void clock() {
 		if (Arrays.equals(instr, 0, 5, BinaryUtils.toRawBools("00101"), 0, 5)) {
 			System.out.println("add");
+
+			regs.setReadFlag1(instr[5]);
+			regs.setReadFlag2(instr[6]);
+			System.out.println(instr[5] ? "reg" : "const");
+			System.out.println(instr[6] ? "reg" : "const");
+
 			regs.setReadReg1(new boolean[]{instr[7], instr[8], instr[9], instr[10], instr[11]});
 			regs.setReadReg2(new boolean[]{instr[12], instr[13], instr[14], instr[15], instr[16]});
 
-			regs.setReadFlag1(instr[5]);
-			System.out.println(instr[5] ? "reg" : "const");
-			regs.setReadFlag2(instr[6]);
-			System.out.println(instr[6] ? "reg" : "const");
-
 			regs.clock();
 
-			System.out.println(BinaryUtils.toStr(regs.getData1()));
-			System.out.println(BinaryUtils.toStr(regs.getData2()));
+			System.out.print(BinaryUtils.toStr(regs.getData1()));
+			System.out.print(" + ");
+			System.out.print(BinaryUtils.toStr(regs.getData2()) + " = ");
 
 			alu.setA(regs.getData1());
 			alu.setB(regs.getData2());
 			alu.setMode(ALU.ADD);
 			alu.clock();
 			alu.print(alu.out);
+
+			regs.setWriteFlag(true);
+			regs.setWriteReg(Registers.AR_CODE);
+			regs.setWriteData(alu.out);
+
+			regs.clockBack();
+
+
 		}
 	}
 

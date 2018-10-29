@@ -36,7 +36,7 @@ public class Assembler {
 				}
 				System.out.println();
 			}
-			instructions.get(PC - 1).execute(verboose);
+			//instructions.get(PC - 1).execute(verboose);
 			PC++;
 		}
 	}

@@ -20,7 +20,8 @@ public class AssInstr {
 		return instr;
 	}
 
-	private void use(String first) {
+
+	/*private void use(String first) {
 		int size = Integer.parseInt(first);
 		from.setSizeMemory(size);
 	}
@@ -124,10 +125,10 @@ public class AssInstr {
 		} else {
 			System.out.println(getRegisterOrConst(first));
 		}
-	}
+	}*/
 
-	public void execute(boolean verboose) {
-		String[] p = instr.split(" ");
+	/*public void execute(boolean verboose) {
+		/*String[] p = instr.split(" ");
 		for (int i = 0; i < p.length; i++) {
 			p[i] = p[i].trim();
 		}
@@ -182,7 +183,7 @@ public class AssInstr {
 		}
 	}
 
-	public int getRegisterOrConst(String token) throws RuntimeException {
+	/*public int getRegisterOrConst(String token) throws RuntimeException {
 		if (token.equals("MR")) {
 			return from.getMR();
 		} else if (token.equals("AR")) {
@@ -239,6 +240,6 @@ public class AssInstr {
 			}
 		}
 		return 0;
-	}
+	}*/
 
 }

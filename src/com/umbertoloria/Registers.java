@@ -2,8 +2,6 @@ package com.umbertoloria;
 
 import com.umbertoloria.utils.BinaryUtils;
 
-import java.util.Arrays;
-
 public class Registers {
 
 	public static final boolean[] PC_CODE = BinaryUtils.toRawBools("000");
@@ -60,7 +58,7 @@ public class Registers {
 
 	public void setWriteReg(boolean[] a) {
 		if (isRegisterCode(a)) {
-			System.arraycopy(a, 0, writeReg, 0, 3);
+			System.arraycopy(a, 0, writeReg, arch - a.length, a.length);
 		}
 	}
 
@@ -88,20 +86,26 @@ public class Registers {
 	public void clockBack() {
 		if (writeFlag) {
 			boolean[] pointer = null;
-			if (Arrays.equals(writeReg, PC_CODE)) {
+			if (endsWith(writeReg, PC_CODE)) {
 				pointer = PC;
-			} else if (Arrays.equals(writeReg, AR_CODE)) {
+			} else if (endsWith(writeReg, AR_CODE)) {
 				pointer = AR;
-			} else if (Arrays.equals(writeReg, LR_CODE)) {
+			} else if (endsWith(writeReg, LR_CODE)) {
 				pointer = LR;
-			} else if (Arrays.equals(writeReg, MR_CODE)) {
+			} else if (endsWith(writeReg, MR_CODE)) {
 				pointer = MR;
-			} else if (Arrays.equals(writeReg, CR_CODE)) {
+			} else if (endsWith(writeReg, CR_CODE)) {
 				pointer = CR;
-			} else if (Arrays.equals(writeReg, OR1_CODE)) {
+			} else if (endsWith(writeReg, OR1_CODE)) {
 				pointer = OR1;
-			} else if (Arrays.equals(writeReg, OR2_CODE)) {
+			} else if (endsWith(writeReg, OR2_CODE)) {
 				pointer = OR2;
+			} else {
+				System.out.println("registro sconosciuto: ");
+				for (boolean b : writeReg) {
+					System.out.println(b);
+				}
+				System.out.println();
 			}
 			System.out.println("nuovo valore");
 			System.arraycopy(writeData, 0, pointer, 0, arch);
@@ -117,19 +121,19 @@ public class Registers {
 	}
 
 	private void setReference(boolean[] type, boolean[] pointer) {
-		if (Arrays.equals(type, PC_CODE)) {
+		if (endsWith(type, PC_CODE)) {
 			System.arraycopy(PC, 0, pointer, 0, arch);
-		} else if (Arrays.equals(type, AR_CODE)) {
+		} else if (endsWith(type, AR_CODE)) {
 			System.arraycopy(AR, 0, pointer, 0, arch);
-		} else if (Arrays.equals(type, LR_CODE)) {
+		} else if (endsWith(type, LR_CODE)) {
 			System.arraycopy(LR, 0, pointer, 0, arch);
-		} else if (Arrays.equals(type, MR_CODE)) {
+		} else if (endsWith(type, MR_CODE)) {
 			System.arraycopy(MR, 0, pointer, 0, arch);
-		} else if (Arrays.equals(type, CR_CODE)) {
+		} else if (endsWith(type, CR_CODE)) {
 			System.arraycopy(CR, 0, pointer, 0, arch);
-		} else if (Arrays.equals(type, OR1_CODE)) {
+		} else if (endsWith(type, OR1_CODE)) {
 			System.arraycopy(OR2, 0, pointer, 0, arch);
-		} else if (Arrays.equals(type, OR2_CODE)) {
+		} else if (endsWith(type, OR2_CODE)) {
 			System.arraycopy(OR2, 0, pointer, 0, arch);
 		}
 	}
