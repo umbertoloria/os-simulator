@@ -18,6 +18,7 @@ public class Compiler {
 	private boolean[] instruction = new boolean[InstructionUtils.MAX_INSTRUCTION_SIZE];
 
 	public void add(String instr) {
+		// FIXME: not 7 7 allowd
 		String[] p = instr.split(" ");
 		String first = "", second = "";
 		if (p.length >= 2) {
@@ -30,7 +31,7 @@ public class Compiler {
 
 		index = BitsUtils.append(instruction, index, InstructionUtils.getInstructionCode(p[0]));
 
-		if (InstructionUtils.isALUInstruction(p[0])) {
+		if (InstructionUtils.isALUInstructionName(p[0])) {
 
 			boolean[] a = getRegisterOrConst(first);
 			index = BitsUtils.append(instruction, index, a.length == RegistersUtils.REGISTERS_SIZE);
@@ -39,12 +40,12 @@ public class Compiler {
 			index = BitsUtils.append(instruction, index, a);
 			index = BitsUtils.append(instruction, index, b);
 
-		} else if (InstructionUtils.isGOTCInstruction(p[0])) {
+		} else if (InstructionUtils.isGOTCInstructionName(p[0])) {
 
 			index = BitsUtils.append(instruction, index, RegistersUtils.getRegisterCode(first));
 			index = BitsUtils.append(instruction, index, getInstruction(second));
 
-		} else if (InstructionUtils.isMEMInstruction(p[0])) {
+		} else if (InstructionUtils.isMEMInstructionName(p[0])) {
 
 			boolean[] a = getRegisterOrConst(second);
 			index = BitsUtils.append(instruction, index, a.length == RegistersUtils.REGISTERS_SIZE);
@@ -84,7 +85,8 @@ public class Compiler {
 		index = 0;
 	}
 
-	public boolean[] get() {
+	// TODO: remove this function.
+	public boolean[] getTMP() {
 		return instructions.get(instructions.size() - 1);
 	}
 

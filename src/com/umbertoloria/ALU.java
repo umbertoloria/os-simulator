@@ -8,27 +8,6 @@ import java.util.Arrays;
 
 public class ALU {
 
-	private static final boolean[] AND = BinaryUtils.toRawBools("0000");
-	private static final boolean[] OR = BinaryUtils.toRawBools("0001");
-	private static final boolean[] NOT = BinaryUtils.toRawBools("0010");
-
-	static final boolean[] ADD = BinaryUtils.toRawBools("0011");
-	private static final boolean[] SUB = BinaryUtils.toRawBools("0100");
-
-	//public static final boolean[] GOTV = BinaryUtils.toRawBools("0101");
-	//public static final boolean[] GOTF = BinaryUtils.toRawBools("0110");
-
-	private static final boolean[] EQA = BinaryUtils.toRawBools("0111");
-	//public static final boolean[] DIF = BinaryUtils.toRawBools("1000");
-
-	//public static final boolean[] LOW = BinaryUtils.toRawBools("1001");
-	//public static final boolean[] LOWEQ = BinaryUtils.toRawBools("1010");
-	//public static final boolean[] GRE = BinaryUtils.toRawBools("1011");
-	//static final boolean[] GREEQ = BinaryUtils.toRawBools("1100");
-
-	//public static final boolean[] LOAD = ADD;
-	//public static final boolean[] STORE = ADD;
-
 	private boolean[] mode = new boolean[4];
 	private boolean[] a = new boolean[Computer.ARCH];
 	private boolean[] b = new boolean[Computer.ARCH];
@@ -66,43 +45,41 @@ public class ALU {
 	}
 
 	// Clock
-	void clock() { // TODO: equals and different
-		if (Arrays.equals(mode, AND)) {
+	void clock() { // TODO: add eqa and diff
+		if (Arrays.equals(mode, ALUUtils.AND)) { // <- e mo?
 			and(a, b, out);
-		} else if (Arrays.equals(mode, OR)) {
+		} else if (Arrays.equals(mode, ALUUtils.OR)) {
 			or(a, b, out);
-		} else if (Arrays.equals(mode, NOT)) {
+		} else if (Arrays.equals(mode, ALUUtils.NOT)) {
 			not(a, out);
-		} else if (Arrays.equals(mode, ADD)) {
+		} else if (Arrays.equals(mode, ALUUtils.ADD)) {
 			add(a, b, out);
-		} else if (Arrays.equals(mode, SUB)) {
+		} else if (Arrays.equals(mode, ALUUtils.SUB)) {
 			sub(a, b, out);
-		}/* else if (Arrays.equals(mode, GOTV)) {
+		}/* else if (Arrays.equals(mode, ALUUtils.GOTV)) {
 
-		} else if (Arrays.equals(mode, GOTF)) {
+		} else if (Arrays.equals(mode, ALUUtils.GOTF)) {
 
-		}*/ else if (Arrays.equals(mode, EQA)) {
+		}*/ else if (Arrays.equals(mode, ALUUtils.EQA)) {
 			sub(a, b, out);
 			if (Arrays.equals(out, zero)) {
 				BitsUtils.setEnd(out, true); // TODO: test this!
 			} else {
 				BitsUtils.set(out, zero);
 			}
-		}/* else if (Arrays.equals(mode, DIF)) {
+		}/* else if (Arrays.equals(mode, ALUUtils.DIF)) {
 
-		} else if (Arrays.equals(mode, LOW)) {
+		} else if (Arrays.equals(mode, ALUUtils.LOW)) {
 
-		} else if (Arrays.equals(mode, LOWEQ)) {
+		} else if (Arrays.equals(mode, ALUUtils.LOWEQ)) {
 
-		} else if (Arrays.equals(mode, GRE)) {
+		} else if (Arrays.equals(mode, ALUUtils.GRE)) {
 
-		} else if (Arrays.equals(mode, GREEQ)) {
+		} else if (Arrays.equals(mode, ALUUtils.GREEQ)) {
 
-		}
+		} else if (Arrays.equals(mode, ALUUtils.LOAD)) {
 
-		else if (Arrays.equals(mode, LOAD)) {
-
-		} else if (Arrays.equals(mode, STORE)) {
+		} else if (Arrays.equals(mode, ALUUtils.STORE)) {
 
 		} */ else {
 			throw new RuntimeException("Istruzione ALU non capita.");

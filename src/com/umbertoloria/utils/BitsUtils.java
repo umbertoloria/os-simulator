@@ -52,7 +52,7 @@ public class BitsUtils {
 		return res;
 	}
 
-	public static boolean[] startAt(boolean[] x, int start) {
+	public static boolean[] startFrom(boolean[] x, int start) {
 		boolean[] res = new boolean[x.length - start];
 		System.arraycopy(x, start, res, 0, res.length);
 		/*for (int i = 0; i < length; i++) {
@@ -70,6 +70,18 @@ public class BitsUtils {
 			}
 		}
 		return i >= check.length;
+	}
+
+	public static boolean equals(boolean[] a, boolean[] b) {
+		if (a.length != b.length) {
+			return false;
+		}
+		for (int i = 0; i < a.length; i++) {
+			if (a[i] != b[i]) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public static void print(boolean[] x) {
