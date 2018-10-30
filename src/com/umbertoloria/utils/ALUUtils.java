@@ -2,6 +2,8 @@ package com.umbertoloria.utils;
 
 public class ALUUtils {
 
+	private int[] aaa = new int[] {2, 3, 4, 5, 6};
+
 	public static boolean[] adder(boolean a, boolean b, boolean carryIn) {
 		boolean carryOut = (!a && b && carryIn) || (a && (b || carryIn));
 		boolean s = (!a && !b && carryIn) || (!a && b && !carryIn) || (a && !b && !carryIn) || (a && b && carryIn);

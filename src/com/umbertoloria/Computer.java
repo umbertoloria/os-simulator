@@ -7,20 +7,20 @@ import com.umbertoloria.utils.RegistersUtils;
 public class Computer {
 
 	public static final int ARCH = 64;
-
+	private boolean[] instr = new boolean[InstructionUtils.MAX_INSTRUCTION_SIZE];
 	private Registers regs = new Registers();
 	private ALU alu = new ALU();
-	private boolean[] instr = new boolean[InstructionUtils.MAX_INSTRUCTION_SIZE];
+	private Controls controls = new Controls();
 
 	public void setInstr(boolean[] instr) {
 		this.instr = instr.clone();
 	}
 
 	public void clock() {
-		String instrName = InstructionUtils.getInstructionName(BitsUtils.truncate(instr, 5));
+		boolean[] instrCode = BitsUtils.truncate(instr, 5);
 		instr = BitsUtils.startAt(instr, 5);
 
-		if (InstructionUtils.isALUInstruction(instrName)) {
+		if (InstructionUtils.isALUInstruction(instrCode)) {
 			boolean roc1 = instr[0];
 			boolean roc2 = instr[1];
 			instr = BitsUtils.startAt(instr, 2);
@@ -54,6 +54,7 @@ public class Computer {
 		regs.setWriteReg(RegistersUtils.getRegisterCode("AR"));
 		regs.setWriteData(alu.getOUT());
 		regs.clockBack();
+		BitsUtils.print(alu.getOUT());
 
 	}
 

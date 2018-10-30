@@ -1,54 +1,51 @@
 package com.umbertoloria;
 
-import com.umbertoloria.utils.BinaryUtils;
 import com.umbertoloria.utils.BitsUtils;
 import com.umbertoloria.utils.RegistersUtils;
 
 public class Registers {
 
-	private boolean[] readReg1, readData1;
-	private boolean[] readReg2, readData2;
-	private boolean[] writeReg, writeData;
-	private boolean[] PC, AR, LR, MR, CR, OR1, OR2;
-	private boolean readFlag1, readFlag2, writeFlag;
+	private boolean[] PC = new boolean[Computer.ARCH];
+	private boolean[] AR = new boolean[Computer.ARCH];
+	private boolean[] LR = new boolean[Computer.ARCH];
+	private boolean[] MR = new boolean[Computer.ARCH];
+	private boolean[] CR = new boolean[Computer.ARCH];
+	private boolean[] OR1 = new boolean[Computer.ARCH];
+	private boolean[] OR2 = new boolean[Computer.ARCH];
 
-	public Registers() {
-		PC = new boolean[Computer.ARCH];
-		AR = new boolean[Computer.ARCH];
-		LR = new boolean[Computer.ARCH];
-		MR = new boolean[Computer.ARCH];
-		CR = new boolean[Computer.ARCH];
-		OR1 = new boolean[Computer.ARCH];
-		OR2 = new boolean[Computer.ARCH];
-		readReg1 = new boolean[Computer.ARCH];
-		readReg2 = new boolean[Computer.ARCH];
-		writeReg = new boolean[RegistersUtils.REGISTERS_SIZE];
-		readData1 = new boolean[Computer.ARCH];
-		readData2 = new boolean[Computer.ARCH];
-		writeData = new boolean[Computer.ARCH];
-	}
+	private boolean readFlag1;
+	private boolean[] readReg1 = new boolean[Computer.ARCH];
+	private boolean[] readData1;
 
-	public void setReadFlag1(boolean set) {
+	private boolean readFlag2;
+	private boolean[] readReg2 = new boolean[Computer.ARCH];
+	private boolean[] readData2;
+
+	private boolean writeFlag;
+	private boolean[] writeReg = new boolean[RegistersUtils.REGISTERS_SIZE];
+	private boolean[] writeData = new boolean[Computer.ARCH];
+
+	void setReadFlag1(boolean set) {
 		this.readFlag1 = set;
 	}
 
-	public void setReadFlag2(boolean set) {
+	void setReadFlag2(boolean set) {
 		this.readFlag2 = set;
 	}
 
-	public void setWriteFlag(boolean writeFlag) {
+	void setWriteFlag(boolean writeFlag) {
 		this.writeFlag = writeFlag;
 	}
 
-	public void setReadReg1(boolean[] save) {
+	void setReadReg1(boolean[] save) {
 		BitsUtils.setEnd(readReg1, save);
 	}
 
-	public void setReadReg2(boolean[] save) {
+	void setReadReg2(boolean[] save) {
 		BitsUtils.setEnd(readReg2, save);
 	}
 
-	public void setWriteReg(boolean[] save) {
+	void setWriteReg(boolean[] save) {
 		if (RegistersUtils.isRegisterCode(save)) {
 			BitsUtils.set(writeReg, save);
 		} else {
@@ -56,14 +53,14 @@ public class Registers {
 		}
 	}
 
-	public void setWriteData(boolean[] a) {
+	void setWriteData(boolean[] a) {
 		if (a.length == Computer.ARCH) {
 			BitsUtils.set(writeData, a);
 		}
 	}
 
-	public void clock() {
-		boolean[] save1 = readReg1;
+	void clock() {
+		/*boolean[] save1 = readReg1;
 		if (readFlag1) {
 			save1 = getRegisterData(save1);
 		}
@@ -72,26 +69,30 @@ public class Registers {
 		if (readFlag2) {
 			save2 = getRegisterData(save2);
 		}
-		BitsUtils.set(readData2, save2);
-	}
-
-	public void clockBack() {
-		if (writeFlag) {
-			BitsUtils.set(getRegisterData(writeReg), writeData);
-			/*System.out.println("scrivendo ");
-			BitsUtils.print(writeData);
-			System.out.println("in un registro che non so quale");
-			BitsUtils.print(writeReg);
-			System.out.println("questo penso");
-			System.err.println(BinaryUtils.toInt(writeData));*/
+		BitsUtils.set(readData2, save2);*/
+		if (readFlag1) {
+			readData1 = getRegisterData(readReg1);
+		} else {
+			readData1 = readReg1;
+		}
+		if (readFlag2) {
+			readData2 = getRegisterData(readReg2);
+		} else {
+			readData2 = readReg2;
 		}
 	}
 
-	public boolean[] getData1() {
+	void clockBack() {
+		if (writeFlag) {
+			BitsUtils.set(getRegisterData(writeReg), writeData);
+		}
+	}
+
+	boolean[] getData1() {
 		return readData1.clone();
 	}
 
-	public boolean[] getData2() {
+	boolean[] getData2() {
 		return readData2.clone();
 	}
 

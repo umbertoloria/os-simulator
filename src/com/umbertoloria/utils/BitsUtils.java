@@ -17,13 +17,17 @@ public class BitsUtils {
 	public static void setEnd(boolean[] set, boolean[] save) {
 		if (save.length <= set.length) {
 			System.arraycopy(save, 0, set, set.length - save.length, save.length);
+			// TODO: VEDERE SE MI SERVE VERAMENTE!
+			for (int i = 0; i < set.length - save.length; i++) {
+				set[i] = false;
+			}
 		} else {
 			throw new RuntimeException("save non ci va in set");
 		}
 	}
 
 	public static void setEnd(boolean[] set, boolean save) {
-		set[set.length-1] = save;
+		set[set.length - 1] = save;
 	}
 
 	public static int append(boolean[] stream, int offset, boolean x) {

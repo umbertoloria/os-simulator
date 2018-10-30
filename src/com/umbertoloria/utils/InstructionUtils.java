@@ -4,7 +4,6 @@ public class InstructionUtils {
 
 	private static final String[] instrOrder = new String[]{"use", "set", "and", "or", "not", "add", "sub", "goto",
 			"gotv", "gotf", "eqa", "diff", "low", "loweq", "gre", "greeq", "load", "store", "print", "exit"};
-
 	private static final String[] tipoALU = new String[]{instrOrder[2], instrOrder[3], instrOrder[5], instrOrder[6],
 			instrOrder[10], instrOrder[11], instrOrder[12], instrOrder[13], instrOrder[14], instrOrder[15]};
 	private static final String[] tipoGotC = new String[]{instrOrder[8], instrOrder[9]};
@@ -24,16 +23,17 @@ public class InstructionUtils {
 		return instrOrder[BinaryUtils.toAbsInt(instr)];
 	}
 
-	public static boolean isALUInstruction(String instr) {
-		return getPosOf(instr, tipoALU) >= 0;
+	public static boolean isALUInstruction(boolean[] instr) {
+		return getPosOf(getInstructionName(instr), tipoALU) >= 0;
 	}
 
-	public static boolean isGOTCInstruction(String instr) {
-		return getPosOf(instr, tipoGotC) >= 0;
+	public static boolean isGOTCInstruction(boolean[] instr) {
+		return getPosOf(getInstructionName(instr), tipoGotC) >= 0;
 	}
+	// sdoppiarli
 
-	public static boolean isMEMInstruction(String instr) {
-		return getPosOf(instr, tipoMem) >= 0;
+	public static boolean isMEMInstruction(boolean[] instr) {
+		return getPosOf(getInstructionName(instr), tipoMem) >= 0;
 	}
 
 
