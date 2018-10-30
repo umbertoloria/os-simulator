@@ -1,79 +1,60 @@
 package com.umbertoloria;
 
-import com.umbertoloria.utils.BinaryUtils;
-
-import java.util.Arrays;
+import com.umbertoloria.utils.BitsUtils;
+import com.umbertoloria.utils.InstructionUtils;
+import com.umbertoloria.utils.RegistersUtils;
 
 public class Computer {
 
-	//private int arch;
-	private Registers regs;
-	private ALU alu;
-	private boolean[] instr;
-	private int instr_length;
+	public static final int ARCH = 64;
 
-	public Computer(int arch) {
-		//this.arch = arch;
-		regs = new Registers(arch);
-		alu = new ALU(arch);
-		//instr = BinaryUtils.toRawBools(ins);
-		instr_length = 7 + 2 * arch;
+	private Registers regs = new Registers();
+	private ALU alu = new ALU();
+	private boolean[] instr = new boolean[InstructionUtils.MAX_INSTRUCTION_SIZE];
+
+	public void setInstr(boolean[] instr) {
+		this.instr = instr.clone();
 	}
-
-	public void setInstr (String ins) {
-		instr = BinaryUtils.toRawBools(ins);
-	}
-
-	/*public void add_cc (int a, int b) {
-		regs.setReadFlag(false);
-		regs.clock();
-		alu.setA(BinaryUtils.convert(a, arch));
-		alu.setB(BinaryUtils.convert(b, arch));
-		alu.setMode(ALU.ADD);
-		alu.clock();
-		boolean[] alu_out = alu.getOUT();
-		regs.setWriteFlag(true);
-		regs.setWriteReg(Registers.AR_CODE);
-		regs.setWriteData(alu_out);
-		regs.clockBack();
-		/*regs.setReadReg2(Registers.AR_CODE);
-		regs.setReadFlag(true);
-		regs.clock();
-		System.out.println(BinaryUtils.toStr(regs.getData2()));*
-	}*/
 
 	public void clock() {
-		if (Arrays.equals(instr, 0, 5, BinaryUtils.toRawBools("00101"), 0, 5)) {
-			System.out.println("add");
+		String instrName = InstructionUtils.getInstructionName(BitsUtils.truncate(instr, 5));
+		instr = BitsUtils.startAt(instr, 5);
 
-			regs.setReadFlag1(instr[5]);
-			regs.setReadFlag2(instr[6]);
-			System.out.println(instr[5] ? "reg" : "const");
-			System.out.println(instr[6] ? "reg" : "const");
-
-			regs.setReadReg1(new boolean[]{instr[7], instr[8], instr[9], instr[10], instr[11]});
-			regs.setReadReg2(new boolean[]{instr[12], instr[13], instr[14], instr[15], instr[16]});
-
-			regs.clock();
-
-			System.out.print(BinaryUtils.toStr(regs.getData1()));
-			System.out.print(" + ");
-			System.out.print(BinaryUtils.toStr(regs.getData2()) + " = ");
-
-			alu.setA(regs.getData1());
-			alu.setB(regs.getData2());
-			alu.setMode(ALU.ADD);
-			alu.clock();
-			alu.print(alu.out);
-
+		if (InstructionUtils.isALUInstruction(instrName)) {
+			boolean roc1 = instr[0];
+			boolean roc2 = instr[1];
+			instr = BitsUtils.startAt(instr, 2);
+			regs.setReadFlag1(roc1);
+			regs.setReadFlag2(roc2);
+			if (roc1) {
+				regs.setReadReg1(BitsUtils.truncate(instr, 3));
+				instr = BitsUtils.startAt(instr, 3);
+			} else {
+				regs.setReadReg1(BitsUtils.truncate(instr, 64));
+				instr = BitsUtils.startAt(instr, 64);
+			}
+			if (roc2) {
+				regs.setReadReg2(BitsUtils.truncate(instr, 3));
+				instr = BitsUtils.startAt(instr, 3);
+			} else {
+				regs.setReadReg2(BitsUtils.truncate(instr, 64));
+				instr = BitsUtils.startAt(instr, 64);
+			}
 			regs.setWriteFlag(true);
-			regs.setWriteReg(Registers.AR_CODE);
-			regs.setWriteData(alu.out);
-
-			regs.clockBack();
-
-
 		}
+
+		regs.clock();
+
+		alu.setA(regs.getData1());
+		alu.setB(regs.getData2());
+		// TODO: uscire l'ALU mode
+		alu.setMode(ALU.ADD);
+		alu.clock();
+		// FIXME: configurare bene il registro di salvataggio
+		regs.setWriteReg(RegistersUtils.getRegisterCode("AR"));
+		regs.setWriteData(alu.getOUT());
+		regs.clockBack();
+
 	}
 
 }

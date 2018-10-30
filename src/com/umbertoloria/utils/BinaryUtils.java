@@ -80,36 +80,6 @@ public class BinaryUtils {
 		return bits;
 	}
 
-	public static void print(boolean[] x) {
-		for (boolean b : x) {
-			System.out.print(b ? '1' : '0');
-		}
-		System.out.println();
-	}
-
-	public static void printInstr(boolean[] x) {
-		if (x.length == 17) {
-			for (int i = 0; i < 5; i++) {
-				System.out.print(x[i] ? '1' : '0');
-			}
-			System.out.print(" ");
-			for (int i = 5; i < 7; i++) {
-				System.out.print(x[i] ? '1' : '0');
-			}
-			System.out.print(" ");
-			for (int i = 7; i < 12; i++) {
-				System.out.print(x[i] ? '1' : '0');
-			}
-			System.out.print(" ");
-			for (int i = 12; i < 17; i++) {
-				System.out.print(x[i] ? '1' : '0');
-			}
-			System.out.println();
-		} else {
-			System.out.println("Non-17 length instruction given!");
-		}
-	}
-
 	/*
 	public static void add(boolean[] a, boolean[] b, boolean[] res) {
 		boolean carryIn = false;

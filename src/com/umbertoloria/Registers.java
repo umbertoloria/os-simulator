@@ -1,39 +1,31 @@
 package com.umbertoloria;
 
 import com.umbertoloria.utils.BinaryUtils;
+import com.umbertoloria.utils.BitsUtils;
+import com.umbertoloria.utils.RegistersUtils;
 
 public class Registers {
-
-	public static final boolean[] PC_CODE = BinaryUtils.toRawBools("000");
-	public static final boolean[] AR_CODE = BinaryUtils.toRawBools("001");
-	public static final boolean[] LR_CODE = BinaryUtils.toRawBools("010");
-	public static final boolean[] MR_CODE = BinaryUtils.toRawBools("011");
-	public static final boolean[] CR_CODE = BinaryUtils.toRawBools("100");
-	public static final boolean[] OR1_CODE = BinaryUtils.toRawBools("101");
-	public static final boolean[] OR2_CODE = BinaryUtils.toRawBools("110");
 
 	private boolean[] readReg1, readData1;
 	private boolean[] readReg2, readData2;
 	private boolean[] writeReg, writeData;
 	private boolean[] PC, AR, LR, MR, CR, OR1, OR2;
 	private boolean readFlag1, readFlag2, writeFlag;
-	private int arch;
 
-	public Registers(int arch) {
-		this.arch = arch;
-		PC = new boolean[arch];
-		AR = new boolean[arch];
-		LR = new boolean[arch];
-		MR = new boolean[arch];
-		CR = new boolean[arch];
-		OR1 = new boolean[arch];
-		OR2 = new boolean[arch];
-		readReg1 = new boolean[arch];
-		readReg2 = new boolean[arch];
-		writeReg = new boolean[arch];
-		readData1 = new boolean[arch];
-		readData2 = new boolean[arch];
-		writeData = new boolean[arch];
+	public Registers() {
+		PC = new boolean[Computer.ARCH];
+		AR = new boolean[Computer.ARCH];
+		LR = new boolean[Computer.ARCH];
+		MR = new boolean[Computer.ARCH];
+		CR = new boolean[Computer.ARCH];
+		OR1 = new boolean[Computer.ARCH];
+		OR2 = new boolean[Computer.ARCH];
+		readReg1 = new boolean[Computer.ARCH];
+		readReg2 = new boolean[Computer.ARCH];
+		writeReg = new boolean[RegistersUtils.REGISTERS_SIZE];
+		readData1 = new boolean[Computer.ARCH];
+		readData2 = new boolean[Computer.ARCH];
+		writeData = new boolean[Computer.ARCH];
 	}
 
 	public void setReadFlag1(boolean set) {
@@ -48,67 +40,50 @@ public class Registers {
 		this.writeFlag = writeFlag;
 	}
 
-	public void setReadReg1(boolean[] a) {
-		System.arraycopy(a, 0, readReg1, 0, arch);
+	public void setReadReg1(boolean[] save) {
+		BitsUtils.setEnd(readReg1, save);
 	}
 
-	public void setReadReg2(boolean[] a) {
-		System.arraycopy(a, 0, readReg2, 0, arch);
+	public void setReadReg2(boolean[] save) {
+		BitsUtils.setEnd(readReg2, save);
 	}
 
-	public void setWriteReg(boolean[] a) {
-		if (isRegisterCode(a)) {
-			System.arraycopy(a, 0, writeReg, arch - a.length, a.length);
+	public void setWriteReg(boolean[] save) {
+		if (RegistersUtils.isRegisterCode(save)) {
+			BitsUtils.set(writeReg, save);
+		} else {
+			throw new RuntimeException("write reg deve essere un reg");
 		}
 	}
 
 	public void setWriteData(boolean[] a) {
-		if (a.length == arch) {
-			System.arraycopy(a, 0, writeData, 0, arch);
+		if (a.length == Computer.ARCH) {
+			BitsUtils.set(writeData, a);
 		}
 	}
 
 	public void clock() {
+		boolean[] save1 = readReg1;
 		if (readFlag1) {
-			setReference(readReg1, readData1);
-		} else {
-			System.out.println(BinaryUtils.toStr(readReg1) + " to data");
-			System.arraycopy(readReg1, 0, readData1, 0, arch);
+			save1 = getRegisterData(save1);
 		}
+		BitsUtils.set(readData1, save1);
+		boolean[] save2 = readReg2;
 		if (readFlag2) {
-			setReference(readReg2, readData2);
-		} else {
-			System.out.println(BinaryUtils.toStr(readReg2) + " to data");
-			System.arraycopy(readReg2, 0, readData2, 0, arch);
+			save2 = getRegisterData(save2);
 		}
+		BitsUtils.set(readData2, save2);
 	}
 
 	public void clockBack() {
 		if (writeFlag) {
-			boolean[] pointer = null;
-			if (endsWith(writeReg, PC_CODE)) {
-				pointer = PC;
-			} else if (endsWith(writeReg, AR_CODE)) {
-				pointer = AR;
-			} else if (endsWith(writeReg, LR_CODE)) {
-				pointer = LR;
-			} else if (endsWith(writeReg, MR_CODE)) {
-				pointer = MR;
-			} else if (endsWith(writeReg, CR_CODE)) {
-				pointer = CR;
-			} else if (endsWith(writeReg, OR1_CODE)) {
-				pointer = OR1;
-			} else if (endsWith(writeReg, OR2_CODE)) {
-				pointer = OR2;
-			} else {
-				System.out.println("registro sconosciuto: ");
-				for (boolean b : writeReg) {
-					System.out.println(b);
-				}
-				System.out.println();
-			}
-			System.out.println("nuovo valore");
-			System.arraycopy(writeData, 0, pointer, 0, arch);
+			BitsUtils.set(getRegisterData(writeReg), writeData);
+			/*System.out.println("scrivendo ");
+			BitsUtils.print(writeData);
+			System.out.println("in un registro che non so quale");
+			BitsUtils.print(writeReg);
+			System.out.println("questo penso");
+			System.err.println(BinaryUtils.toInt(writeData));*/
 		}
 	}
 
@@ -120,38 +95,23 @@ public class Registers {
 		return readData2.clone();
 	}
 
-	private void setReference(boolean[] type, boolean[] pointer) {
-		if (endsWith(type, PC_CODE)) {
-			System.arraycopy(PC, 0, pointer, 0, arch);
-		} else if (endsWith(type, AR_CODE)) {
-			System.arraycopy(AR, 0, pointer, 0, arch);
-		} else if (endsWith(type, LR_CODE)) {
-			System.arraycopy(LR, 0, pointer, 0, arch);
-		} else if (endsWith(type, MR_CODE)) {
-			System.arraycopy(MR, 0, pointer, 0, arch);
-		} else if (endsWith(type, CR_CODE)) {
-			System.arraycopy(CR, 0, pointer, 0, arch);
-		} else if (endsWith(type, OR1_CODE)) {
-			System.arraycopy(OR2, 0, pointer, 0, arch);
-		} else if (endsWith(type, OR2_CODE)) {
-			System.arraycopy(OR2, 0, pointer, 0, arch);
+	private boolean[] getRegisterData(boolean[] reg) {
+		if (BitsUtils.endsWith(reg, RegistersUtils.PC_CODE)) {
+			return PC;
+		} else if (BitsUtils.endsWith(reg, RegistersUtils.AR_CODE)) {
+			return AR;
+		} else if (BitsUtils.endsWith(reg, RegistersUtils.LR_CODE)) {
+			return LR;
+		} else if (BitsUtils.endsWith(reg, RegistersUtils.MR_CODE)) {
+			return MR;
+		} else if (BitsUtils.endsWith(reg, RegistersUtils.CR_CODE)) {
+			return CR;
+		} else if (BitsUtils.endsWith(reg, RegistersUtils.OR1_CODE)) {
+			return OR1;
+		} else if (BitsUtils.endsWith(reg, RegistersUtils.OR2_CODE)) {
+			return OR2;
 		}
-	}
-
-	private static boolean isRegisterCode(boolean[] a) {
-		return endsWith(a, PC_CODE) || endsWith(a, AR_CODE) || endsWith(a, LR_CODE) || endsWith(a, MR_CODE) ||
-				endsWith(a, CR_CODE) || endsWith(a, OR1_CODE) || endsWith(a, OR2_CODE);
-	}
-
-	public static boolean endsWith(boolean[] a, boolean[] check) {
-		int offset = a.length - check.length;
-		int i;
-		for (i = 0; i < check.length; i++) {
-			if (a[offset + i] != check[i]) {
-				break;
-			}
-		}
-		return i >= check.length;
+		throw new RuntimeException("Abbiamo un non-registro in writeReg");
 	}
 
 }

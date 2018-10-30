@@ -1,29 +1,21 @@
 package com.umbertoloria;
 
 import com.umbertoloria.utils.BinaryUtils;
+import com.umbertoloria.utils.BitsUtils;
+import com.umbertoloria.utils.InstructionUtils;
+import com.umbertoloria.utils.RegistersUtils;
 
 import java.util.ArrayList;
 
 public class Compiler {
 
-	private static final String[] instrOrder = new String[]{"use", "set", "and", "or", "not", "add", "sub", "goto",
-			"gotv", "gotf", "eqa", "diff", "low", "loweq", "gre", "greeq", "load", "store", "print", "exit"};
-
-	private static final String[] tipoALU = new String[]{instrOrder[2], instrOrder[3], instrOrder[5], instrOrder[6],
-			instrOrder[10], instrOrder[11], instrOrder[12], instrOrder[13], instrOrder[14], instrOrder[15]};
-	private static final String[] tipoGotC = new String[]{instrOrder[8], instrOrder[9]};
-	private static final String[] tipoMem = new String[]{instrOrder[16], instrOrder[17]};
-
-	private int arch;
 	private ArrayList<boolean[]> instructions = new ArrayList<>();
-
-	private boolean[] instruction;
-
-	public Compiler(int arch) {
-		this.arch = arch;
-		this.instruction = new boolean[7 + 2 * arch];
-	}
-
+	private int index = 0;
+	// FIXME: vedere di togliere queste costanti da quì
+	private static final int CONSTANT_SIZE = 64;
+	private static final int INSTRUCTION_ADDRESS_SIZE = 64;
+	private static final int MEMORY_ADDRESS_SIZE = 64;
+	private boolean[] instruction = new boolean[InstructionUtils.MAX_INSTRUCTION_SIZE];
 
 	public void add(String instr) {
 		String[] p = instr.split(" ");
@@ -36,232 +28,90 @@ public class Compiler {
 			}
 		}
 
-		setInstr(p[0]);
-		if (getPosOf(p[0], tipoALU) >= 0) {
+		index = BitsUtils.append(instruction, index, InstructionUtils.getInstructionCode(p[0]));
 
-			boolean[] a = new boolean[arch];
-			boolean[] b = new boolean[arch];
-			setRoC1(computeBitSection(first, a));
-			setRoC2(computeBitSection(second, b));
-			setA(a);
-			setB(b);
+		if (InstructionUtils.isALUInstruction(p[0])) {
 
-		} else if (getPosOf(p[0], tipoGotC) >= 0) {
+			boolean[] a = getRegisterOrConst(first);
+			index = BitsUtils.append(instruction, index, a.length == RegistersUtils.REGISTERS_SIZE);
+			boolean[] b = getRegisterOrConst(second);
+			index = BitsUtils.append(instruction, index, b.length == RegistersUtils.REGISTERS_SIZE);
+			index = BitsUtils.append(instruction, index, a);
+			index = BitsUtils.append(instruction, index, b);
 
-			setRoC1(true);
-			setRoC2(false);
-			setA(getRegister(first));
-			setB(getInstruction(second));
+		} else if (InstructionUtils.isGOTCInstruction(p[0])) {
 
+			index = BitsUtils.append(instruction, index, RegistersUtils.getRegisterCode(first));
+			index = BitsUtils.append(instruction, index, getInstruction(second));
+
+		} else if (InstructionUtils.isMEMInstruction(p[0])) {
+
+			boolean[] a = getRegisterOrConst(second);
+			index = BitsUtils.append(instruction, index, a.length == RegistersUtils.REGISTERS_SIZE);
+			index = BitsUtils.append(instruction, index, getMemory(first));
+			index = BitsUtils.append(instruction, index, a);
+
+		} else if (p[0].equals("use")) {
+
+			index = BitsUtils.append(instruction, index, getConst(first));
+
+		} else if (p[0].equals("set")) {
+
+			boolean[] a = getRegisterOrConst(second);
+			index = BitsUtils.append(instruction, index, a.length == RegistersUtils.REGISTERS_SIZE);
+			index = BitsUtils.append(instruction, index, RegistersUtils.getRegisterCode(first));
+			index = BitsUtils.append(instruction, index, a);
+
+		} else if (p[0].equals("not")) {
+
+			boolean[] a = getRegisterOrConst(first);
+			index = BitsUtils.append(instruction, index, a.length == RegistersUtils.REGISTERS_SIZE);
+			index = BitsUtils.append(instruction, index, a);
+
+		} else if (p[0].equals("goto")) {
+
+			index = BitsUtils.append(instruction, index, getInstruction(first));
+
+		} else if (p[0].equals("print")) {
+			System.out.println("print bypassata");
 		}
 
 		push();
 	}
 
-	public void push() {
-		BinaryUtils.printInstr(instruction);
+	private void push() {
+		instructions.add(BitsUtils.truncate(instruction, index));
+		index = 0;
 	}
 
-	public void setInstr(String name) {
-		System.arraycopy(BinaryUtils.convertAbs(getPosOf(name, instrOrder), 5), 0, instruction, 0, 5);
+	public boolean[] get() {
+		return instructions.get(instructions.size() - 1);
 	}
 
-	public void setRoC1(boolean set) {
-		instruction[5] = set;
+	private boolean[] getConst(String data) {
+		return BinaryUtils.convert(Integer.parseInt(data), CONSTANT_SIZE);
 	}
 
-	public void setRoC2(boolean set) {
-		instruction[6] = set;
-	}
-
-	public void setA(boolean[] set) {
-		System.arraycopy(set, 0, instruction, 7, arch);
-	}
-
-	public void setB(boolean[] set) {
-		System.arraycopy(set, 0, instruction, 12, arch);
-	}
-
-	public int getPosOf(String ago, String[] pagliaio) {
-		for (int i = 0; i < pagliaio.length; i++) {
-			if (ago.equals(pagliaio[i])) {
-				return i;
-			}
+	private boolean[] getRegisterOrConst(String data) {
+		try {
+			return RegistersUtils.getRegisterCode(data);
+		} catch (RuntimeException e) {
+			return BinaryUtils.convert(Integer.parseInt(data), CONSTANT_SIZE);
 		}
-		return -1;
 	}
 
-	public boolean computeBitSection(String data, boolean[] array) {
-		boolean[] toput = getRegister(data);
-		boolean reg = true;
-		if (toput == null) {
-			toput = BinaryUtils.convert(Integer.parseInt(data), arch);
-			reg = false;
-		}
-		System.arraycopy(toput, 0, array, 0, arch);
-		return reg;
-	}
-
-	public boolean[] getRegister(String token) throws RuntimeException {
-		if (token.equals("PC")) {
-			return BinaryUtils.addZeros(BinaryUtils.toStr(Registers.PC_CODE), arch);
-		} else if (token.equals("AR")) {
-			return BinaryUtils.addZeros(BinaryUtils.toStr(Registers.AR_CODE), arch);
-		} else if (token.equals("LR")) {
-			return BinaryUtils.addZeros(BinaryUtils.toStr(Registers.LR_CODE), arch);
-		} else if (token.equals("MR")) {
-			return BinaryUtils.addZeros(BinaryUtils.toStr(Registers.MR_CODE), arch);
-		} else if (token.equals("CR")) {
-			return BinaryUtils.addZeros(BinaryUtils.toStr(Registers.CR_CODE), arch);
-		} else if (token.equals("OR1")) {
-			return BinaryUtils.addZeros(BinaryUtils.toStr(Registers.OR1_CODE), arch);
-		} else if (token.equals("OR2")) {
-			return BinaryUtils.addZeros(BinaryUtils.toStr(Registers.OR2_CODE), arch);
-		}
-		return null;
-	}
-
-	public boolean[] getInstruction(String token) throws RuntimeException {
+	private boolean[] getInstruction(String token) throws RuntimeException {
 		if (token.startsWith("@")) {
-			return BinaryUtils.convert(Integer.parseInt(token.substring(1)), arch);
+			return BinaryUtils.convert(Integer.parseInt(token.substring(1)), INSTRUCTION_ADDRESS_SIZE);
 		}
-		return null;
+		throw new RuntimeException();
 	}
 
-
-
-
-
-
-
-
-
-	/*private void use(String first) {
-		boolean[] a = BinaryUtils.convert(Integer.parseInt(first), arch);
-		boolean[] res = BinaryUtils.toRawBools("0000000" + BinaryUtils.toStr(a) + "00000");
-		System.out.println(BinaryUtils.toStr(res));
-		instrs.add(res);
-	}
-
-	private void set(String first, String second) {
-		boolean[] a = getRegister(first);
-		if (a == null) {
-			System.err.println("Syntax error");
-			System.exit(1);
+	private boolean[] getMemory(String token) throws RuntimeException {
+		if (token.startsWith("#")) {
+			return BinaryUtils.convert(Integer.parseInt(token.substring(1)), MEMORY_ADDRESS_SIZE);
 		}
-		boolean[] b = getRegister(second);
-		String roc = "1";
-		if (b == null) {
-			roc = "0";
-			b = BinaryUtils.convert(Integer.parseInt(second), arch);
-		}
-		String flag1 = "1";
-		String flag2 = "1";
-		boolean[] res = BinaryUtils.toRawBools("000011" + roc + BinaryUtils.toStr(a) + BinaryUtils.toStr(b));
-		System.out.println(BinaryUtils.toStr(res));
-		instrs.add(res);
+		throw new RuntimeException();
 	}
-
-	private void set(String first, String second) {
-		int val = getRegisterOrConst(second);
-		storeRegister(first, val);
-	}
-
-	private void add(String first, String second) {
-		int val1 = getRegisterOrConst(first);
-		int val2 = getRegisterOrConst(second);
-		storeRegister("AR", val1 + val2);
-	}
-
-	private void sub(String first, String second) {
-		int val1 = getRegisterOrConst(first);
-		int val2 = getRegisterOrConst(second);
-		storeRegister("AR", val1 - val2);
-	}
-
-	private void fgoto(String first) {
-		int newInstr = getInstruction(first);
-		if (newInstr > 0) {
-			from.setPC(newInstr);
-		} else {
-			System.err.println("indirizzo goto senza @");
-		}
-	}
-
-	private void fgotv(String first, String second) {
-		if (first.equals("CR")) {
-			if (from.getCR() == 1) {
-				int newInstr = getInstruction(second);
-				if (newInstr > 0) {
-					from.setPC(newInstr);
-				} else {
-					System.err.println("indirizzo gotv senza @");
-				}
-				from.setPC(newInstr);
-			}
-		}
-	}
-
-	private void fgotf(String first, String second) {
-		if (first.equals("CR")) {
-			if (from.getCR() == 0) {
-				int newInstr = getInstruction(second);
-				if (newInstr > 0) {
-					from.setPC(newInstr);
-				} else {
-					System.err.println("indirizzo gotf senza @");
-				}
-				from.setPC(newInstr);
-			}
-		}
-	}
-
-	private void low(String first, String second) {
-		int a = getRegisterOrConst(first);
-		int b = getRegisterOrConst(second);
-		from.setCR((a < b) ? 1 : 0);
-	}
-
-	private void loweq(String first, String second) {
-		int a = getRegisterOrConst(first);
-		int b = getRegisterOrConst(second);
-		from.setCR((a <= b) ? 1 : 0);
-	}
-
-	private void gre(String first, String second) {
-		int a = getRegisterOrConst(first);
-		int b = getRegisterOrConst(second);
-		from.setCR((a > b) ? 1 : 0);
-	}
-
-	private void greeq(String first, String second) {
-		int a = getRegisterOrConst(first);
-		int b = getRegisterOrConst(second);
-		from.setCR((a >= b) ? 1 : 0);
-	}
-
-	private void load(String first, String second) {
-		int addr = getAddress(first);
-		int offset = getRegisterOrConst(second);
-		from.setMR(from.getMemoryBlock(addr + offset));
-	}
-
-	private void store(String first, String second) {
-		int addr = getAddress(first);
-		int offset = Integer.parseInt(second);
-		from.setMemoryBlock(addr + offset, from.getMR());
-	}
-
-	private void print(String first) {
-		String output;
-		System.err.print("OUTPUT: ");
-		if (first.startsWith("\"") && first.endsWith("\"")) {
-			output = first.substring(1, first.length() - 1);
-			System.out.println(output);
-		} else {
-			System.out.println(getRegisterOrConst(first));
-		}
-	}
-	 */
 
 }

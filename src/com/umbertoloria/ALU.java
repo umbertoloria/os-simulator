@@ -2,6 +2,7 @@ package com.umbertoloria;
 
 import com.umbertoloria.utils.ALUUtils;
 import com.umbertoloria.utils.BinaryUtils;
+import com.umbertoloria.utils.BitsUtils;
 
 import java.util.Arrays;
 
@@ -28,20 +29,18 @@ public class ALU {
 	public static final boolean[] LOAD = ADD;
 	public static final boolean[] STORE = ADD;
 
-	private int arch;
 	private boolean[] mode;
 	private String modeStr;
 	private boolean[] a, b;
 	public boolean[] out;
 	private boolean[] zero;
 
-	public ALU(int arch) {
-		this.arch = arch;
+	public ALU() {
 		mode = new boolean[4];
-		a = new boolean[arch];
-		b = new boolean[arch];
-		out = new boolean[arch];
-		zero = new boolean[arch];
+		a = new boolean[Computer.ARCH];
+		b = new boolean[Computer.ARCH];
+		out = new boolean[Computer.ARCH];
+		zero = new boolean[Computer.ARCH];
 	}
 
 	public void setMode(boolean[] mode) {
@@ -56,18 +55,18 @@ public class ALU {
 
 	// A
 	public void setA(boolean[] a) {
-		if (a.length != arch) {
+		if (a.length != Computer.ARCH) {
 			throw new RuntimeException();
 		}
-		System.arraycopy(a, 0, this.a, 0, arch);
+		BitsUtils.set(this.a, a);
 	}
 
 	// B
 	public void setB(boolean[] b) {
-		if (b.length != arch) {
+		if (b.length != Computer.ARCH) {
 			throw new RuntimeException();
 		}
-		System.arraycopy(b, 0, this.b, 0, arch);
+		BitsUtils.set(this.b, b);
 	}
 
 	// Out
@@ -94,9 +93,9 @@ public class ALU {
 		} else if (Arrays.equals(mode, EQA)) {
 			sub(a, b, out);
 			if (Arrays.equals(out, zero)) {
-				out[out.length - 1] = true;
+				BitsUtils.setEnd(out, true); // TODO: test this!
 			} else {
-				System.arraycopy(zero, 0, out, 0, arch);
+				BitsUtils.set(out, zero);
 			}
 		} else if (Arrays.equals(mode, DIF)) {
 
