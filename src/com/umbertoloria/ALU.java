@@ -3,6 +3,7 @@ package com.umbertoloria;
 import com.umbertoloria.utils.ALUUtils;
 import com.umbertoloria.utils.BinaryUtils;
 import com.umbertoloria.utils.BitsUtils;
+import com.umbertoloria.utils.Circuits;
 
 import java.util.Arrays;
 
@@ -14,6 +15,10 @@ public class ALU {
 	private boolean[] out = new boolean[Computer.ARCH];
 	private boolean[] zero = new boolean[Computer.ARCH];
 
+	/**
+	 * Sets the ALU Mode.
+	 * @param mode will be the new ALU Mode
+	 */
 	void setMode(boolean[] mode) {
 		int n = BinaryUtils.toAbsInt(mode);
 		if (n <= 12) {
@@ -23,7 +28,10 @@ public class ALU {
 		}
 	}
 
-	// A
+	/**
+	 * Sets the first operand of the ALU.
+	 * @param a will be set on the first operand
+	 */
 	public void setA(boolean[] a) {
 		if (a.length != Computer.ARCH) {
 			throw new RuntimeException();
@@ -31,7 +39,10 @@ public class ALU {
 		BitsUtils.set(this.a, a);
 	}
 
-	// B
+	/**
+	 * Sets the second operand of the ALU.
+	 * @param b will be set on the second operand
+	 */
 	void setB(boolean[] b) {
 		if (b.length != Computer.ARCH) {
 			throw new RuntimeException();
@@ -39,12 +50,18 @@ public class ALU {
 		BitsUtils.set(this.b, b);
 	}
 
-	// Out
+	/**
+	 * Gets the last output produced by the ALU after a clock call.
+	 * @return the result
+	 * @see ALU
+	 */
 	boolean[] getOUT() {
 		return out.clone();
 	}
 
-	// Clock
+	/**
+	 * Executes the older of all the instructions on the queue.
+	 */
 	void clock() { // TODO: add eqa and diff
 		if (Arrays.equals(mode, ALUUtils.AND)) { // <- e mo?
 			and(a, b, out);
@@ -88,26 +105,26 @@ public class ALU {
 
 	private static void and(boolean[] a, boolean[] b, boolean[] res) {
 		for (int i = 0; i < a.length; i++) {
-			res[i] = ALUUtils.and(a[i], b[i]);
+			res[i] = Circuits.and(a[i], b[i]);
 		}
 	}
 
 	private static void or(boolean[] a, boolean[] b, boolean[] res) {
 		for (int i = 0; i < a.length; i++) {
-			res[i] = ALUUtils.or(a[i], b[i]);
+			res[i] = Circuits.or(a[i], b[i]);
 		}
 	}
 
 	private static void not(boolean[] a, boolean[] res) {
 		for (int i = 0; i < a.length; i++) {
-			res[i] = ALUUtils.not(a[i]);
+			res[i] = Circuits.not(a[i]);
 		}
 	}
 
-	public static void add(boolean[] a, boolean[] b, boolean[] res) {
+	private static void add(boolean[] a, boolean[] b, boolean[] res) {
 		boolean carryIn = false;
 		for (int i = a.length - 1; i >= 0; i--) {
-			boolean[] added = ALUUtils.adder(a[i], b[i], carryIn);
+			boolean[] added = Circuits.adder(a[i], b[i], carryIn);
 			res[i] = added[0];
 			carryIn = added[1];
 		}
@@ -116,7 +133,7 @@ public class ALU {
 	private static void sub(boolean[] a, boolean[] b, boolean[] res) {
 		boolean carryIn = true;
 		for (int i = a.length - 1; i >= 0; i--) {
-			boolean[] added = ALUUtils.adder(a[i], ALUUtils.not(b[i]), carryIn);
+			boolean[] added = Circuits.adder(a[i], Circuits.not(b[i]), carryIn);
 			res[i] = added[0];
 			carryIn = added[1];
 		}

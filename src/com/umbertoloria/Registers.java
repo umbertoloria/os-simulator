@@ -25,16 +25,28 @@ public class Registers {
 	private boolean[] writeReg = new boolean[RegistersUtils.REGISTERS_SIZE];
 	private boolean[] writeData = new boolean[Computer.ARCH];
 
+	/**
+	 * Sets the First Register Read Flag.
+	 * @param set will be the new first register read flag
+	 */
 	void setReadFlag1(boolean set) {
 		this.readFlag1 = set;
 	}
 
+	/**
+	 * Sets the Second Register Read Flag.
+	 * @param set will be the new second register read flag
+	 */
 	void setReadFlag2(boolean set) {
 		this.readFlag2 = set;
 	}
 
-	void setWriteFlag(boolean writeFlag) {
-		this.writeFlag = writeFlag;
+	/**
+	 * Sets the Register Write Flag.
+	 * @param set will be the new register write flag
+	 */
+	void setWriteFlag(boolean set) {
+		this.writeFlag = set;
 	}
 
 	void setReadReg1(boolean[] save) {
