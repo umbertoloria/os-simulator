@@ -1,60 +1,61 @@
 package com.umbertoloria.utils;
 
+import com.umbertoloria.bittings.BitStream;
+
 public class RegistersUtils {
 
 	// TODO: completare con 8 registri! così si tratta solo di avere 3 bits hahaha
 	public static final int REGISTERS_SIZE = 3;
-	public static final boolean[] PC_CODE = BinaryUtils.toRawBools("000");
-	public static final boolean[] AR_CODE = BinaryUtils.toRawBools("001");
-	public static final boolean[] LR_CODE = BinaryUtils.toRawBools("010");
-	public static final boolean[] MR_CODE = BinaryUtils.toRawBools("011");
-	public static final boolean[] CR_CODE = BinaryUtils.toRawBools("100");
-	public static final boolean[] OR1_CODE = BinaryUtils.toRawBools("101");
-	public static final boolean[] OR2_CODE = BinaryUtils.toRawBools("110");
+	public static final BitStream PC_C = new BitStream("000");
+	public static final BitStream AR_C = new BitStream("001");
+	public static final BitStream LR_C = new BitStream("010");
+	public static final BitStream MR_C = new BitStream("011");
+	public static final BitStream CR_C = new BitStream("100");
+	public static final BitStream OR1_C = new BitStream("101");
+	public static final BitStream OR2_C = new BitStream("110");
 
-	public static boolean[] getRegisterCode(String token) throws RuntimeException {
+	public static BitStream getRegisterCode(String token) throws RuntimeException {
 		switch (token) {
 			case "PC":
-				return RegistersUtils.PC_CODE;
+				return RegistersUtils.PC_C;
 			case "AR":
-				return RegistersUtils.AR_CODE;
+				return RegistersUtils.AR_C;
 			case "LR":
-				return RegistersUtils.LR_CODE;
+				return RegistersUtils.LR_C;
 			case "MR":
-				return RegistersUtils.MR_CODE;
+				return RegistersUtils.MR_C;
 			case "CR":
-				return RegistersUtils.CR_CODE;
+				return RegistersUtils.CR_C;
 			case "OR1":
-				return RegistersUtils.OR1_CODE;
+				return RegistersUtils.OR1_C;
 			case "OR2":
-				return RegistersUtils.OR2_CODE;
+				return RegistersUtils.OR2_C;
 		}
 		throw new RuntimeException();
 	}
 
-	public static String getRegisterName(boolean[] code) {
-		if (BitsUtils.equals(code, PC_CODE)) {
+	public static String getRegisterName(BitStream code) {
+		if (code.equals(PC_C)) {
 			return "PC";
-		} else if (BitsUtils.equals(code, AR_CODE)) {
+		} else if (code.equals(AR_C)) {
 			return "AR";
-		} else if (BitsUtils.equals(code, LR_CODE)) {
+		} else if (code.equals(LR_C)) {
 			return "LR";
-		} else if (BitsUtils.equals(code, MR_CODE)) {
+		} else if (code.equals(MR_C)) {
 			return "MR";
-		} else if (BitsUtils.equals(code, CR_CODE)) {
+		} else if (code.equals(CR_C)) {
 			return "CR";
-		} else if (BitsUtils.equals(code, OR1_CODE)) {
+		} else if (code.equals(OR1_C)) {
 			return "OR1";
-		} else if (BitsUtils.equals(code, OR2_CODE)) {
+		} else if (code.equals(OR2_C)) {
 			return "OR2";
 		}
 		throw new RuntimeException();
 	}
 
-	public static boolean isRegisterCode(boolean[] a) {
-		return BitsUtils.endsWith(a, PC_CODE) || BitsUtils.endsWith(a, AR_CODE) || BitsUtils.endsWith(a, LR_CODE) ||
-				BitsUtils.endsWith(a, MR_CODE) || BitsUtils.endsWith(a, CR_CODE) || BitsUtils.endsWith(a, OR1_CODE) ||
-				BitsUtils.endsWith(a, OR2_CODE);
+	public static boolean isRegisterCode(BitStream a) {
+		return a.endsWith(PC_C) || a.endsWith(AR_C) || a.endsWith(LR_C) || a.endsWith(MR_C) ||
+				a.endsWith(CR_C) || a.endsWith(OR1_C) || a.endsWith(OR2_C);
 	}
 
 }

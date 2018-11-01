@@ -1,20 +1,18 @@
 package com.umbertoloria;
 
+import com.umbertoloria.bittings.Bit;
+import com.umbertoloria.bittings.BitStream;
 import com.umbertoloria.integrates.OR;
 import com.umbertoloria.utils.ALUUtils;
-import com.umbertoloria.utils.BinaryUtils;
-import com.umbertoloria.utils.BitsUtils;
 import com.umbertoloria.utils.Circuits;
-
-import java.util.Arrays;
 
 public class ALU {
 
-	private boolean[] mode = new boolean[4];
-	private boolean[] a = new boolean[Computer.ARCH];
-	private boolean[] b = new boolean[Computer.ARCH];
-	private boolean[] result = new boolean[Computer.ARCH];
-	private boolean[] zero = new boolean[Computer.ARCH];
+	private BitStream mode;
+	private BitStream a, b;
+	private BitStream result = new BitStream(Computer.ARCH);// = new boolean[Computer.ARCH];
+	private BitStream zero;// = new boolean[Computer.ARCH];
+	// Non riferire a zero!
 	private OR orGate = new OR(Computer.ARCH);
 	// TODO: maybe the eigth register is zero?
 
@@ -22,10 +20,10 @@ public class ALU {
 	 Sets the ALU Mode.
 	 @param mode will be the new ALU Mode
 	 */
-	void setMode(boolean[] mode) {
-		int n = BinaryUtils.toAbsInt(mode);
-		if (n <= 12) {
-			System.arraycopy(mode, 0, this.mode, 0, 4);
+	void setMode(BitStream mode) {
+		if (ALUUtils.isAluMode(mode)) {
+			//System.arraycopy(mode, 0, this.mode, 0, 4);
+			this.mode = mode;
 		} else {
 			throw new RuntimeException("ALU mode non valida.");
 		}
@@ -35,22 +33,24 @@ public class ALU {
 	 Sets the first operand of the ALU.
 	 @param a will be set on the first operand
 	 */
-	public void setA(boolean[] a) {
-		if (a.length != Computer.ARCH) {
+	public void setA(BitStream a) {
+		if (a.size() != Computer.ARCH) {
 			throw new RuntimeException();
 		}
-		BitsUtils.set(this.a, a);
+		//BitsUtils.set(this.a, a);
+		this.a = a;
 	}
 
 	/**
 	 Sets the second operand of the ALU.
 	 @param b will be set on the second operand
 	 */
-	void setB(boolean[] b) {
-		if (b.length != Computer.ARCH) {
+	void setB(BitStream b) {
+		if (b.size() != Computer.ARCH) {
 			throw new RuntimeException();
 		}
-		BitsUtils.set(this.b, b);
+		//BitsUtils.set(this.b, b);
+		this.b = b;
 	}
 
 	/**
@@ -58,78 +58,93 @@ public class ALU {
 	 @return the result
 	 @see ALU
 	 */
-	boolean[] getResult() {
-		return result.clone();
+	BitStream getResult() {
+		return result;
 	}
 
 	/**
 	 Executes the older of all the instructions on the queue.
 	 */
 	void clock() {
-		if (Arrays.equals(mode, ALUUtils.AND)) { // <- e mo?
+		if (mode.equals(ALUUtils.AND)) { // <- e mo?
 			and(a, b, result);
-		} else if (Arrays.equals(mode, ALUUtils.OR)) {
+		} else if (mode.equals(ALUUtils.OR)) {
 			or(a, b, result);
-		} else if (Arrays.equals(mode, ALUUtils.NOT)) {
+		} else if (mode.equals(ALUUtils.NOT)) {
 			not(a, result);
-		} else if (Arrays.equals(mode, ALUUtils.ADD)) {
-			System.out.println();
+		} else if (mode.equals(ALUUtils.ADD)) {
 			add(a, b, result);
-			System.out.println();
-		} else if (Arrays.equals(mode, ALUUtils.SUB)) {
+		} else if (mode.equals(ALUUtils.SUB)) {
 			sub(a, b, result);
 		}/* else if (Arrays.equals(mode, ALUUtils.GOTV)) {
 
 		} else if (Arrays.equals(mode, ALUUtils.GOTF)) {
 
-		}*/ else if (Arrays.equals(mode, ALUUtils.EQA)) {
+		}*/ else if (mode.equals(ALUUtils.EQU)) {
 			sub(a, b, result);
 			if (!thereAreAnyTrues(result, 0)) {
-				BitsUtils.setEnd(result, true);
+				//BitsUtils.setEnd(result, true);
+				result.set(result.size() - 1, true);
 			} else {
-				BitsUtils.set(result, zero);
+				//BitsUtils.set(result, zero);
+				result = zero.clone();
 			}
-		} else if (Arrays.equals(mode, ALUUtils.DIFF)) { // TODO: forse togliere l'istruzione diff o eqa?
+		} else if (mode.equals(ALUUtils.DIFF)) { // TODO: forse togliere l'istruzione diff o equ?
 			sub(a, b, result);
 			// tutti i bit messi in or. se esce zero allora erano tutti zero
 			if (thereAreAnyTrues(result, 0)) {
-				BitsUtils.set(result, zero);
-				BitsUtils.setEnd(result, true);
+				//BitsUtils.set(result, zero);
+				result = zero.clone();
+				//BitsUtils.setEnd(result, true);
+				result.set(result.size() - 1, true);
 			} else {
-				BitsUtils.set(result, zero);
+				//BitsUtils.set(result, zero);
+				result = zero.clone();
 			}
-		} else if (Arrays.equals(mode, ALUUtils.LOW)) {
+		} else if (mode.equals(ALUUtils.LOW)) {
 			sub(a, b, result);
-			if (result[0]) {
-				BitsUtils.set(result, zero);
-				BitsUtils.setEnd(result, true);
+			if (result.get(0).get()) {
+				//BitsUtils.set(result, zero);
+				result = zero.clone();
+				//BitsUtils.setEnd(result, true);
+				result.set(result.size() - 1, true);
 			} else {
-				BitsUtils.set(result, zero);
+				//BitsUtils.set(result, zero);
+				result = zero.clone();
 			}
-		} else if (Arrays.equals(mode, ALUUtils.LOWEQ)) {
+		} else if (mode.equals(ALUUtils.LOWEQ)) {
 			sub(a, b, result);
-			// Short-Circuit Evaluation: thereAreAnyTrues viene chiamata solo se out[0] = false
-			if (result[0] || !thereAreAnyTrues(result, 1)) {
-				BitsUtils.set(result, zero);
-				BitsUtils.setEnd(result, true);
+			// Short-Circuit Evaluation: thereAreAnyTrues viene chiamata solo se result[0] = false
+			if (result.get(0).get() || !thereAreAnyTrues(result, 1)) {
+				//BitsUtils.set(result, zero);
+				result = zero.clone();
+				//BitsUtils.setEnd(result, true);
+				result.set(result.size() - 1, true);
 			} else {
-				BitsUtils.set(result, zero);
+				//BitsUtils.set(result, zero);
+				result = zero.clone();
 			}
-		} else if (Arrays.equals(mode, ALUUtils.GRE)) {
+		} else if (mode.equals(ALUUtils.GRE)) {
 			sub(a, b, result);
-			if (!result[0] && thereAreAnyTrues(result, 1)) {
-				BitsUtils.set(result, zero);
-				BitsUtils.setEnd(result, true);
+			if (!result.get(0).get() && thereAreAnyTrues(result, 1)) {
+				//BitsUtils.set(result, zero);
+				result = zero.clone();
+				//BitsUtils.setEnd(result, true);
+				result.set(result.size() - 1, true);
 			} else {
-				BitsUtils.set(result, zero);
+				//BitsUtils.set(result, zero);
+				result = zero.clone();
 			}
-		} else if (Arrays.equals(mode, ALUUtils.GREEQ)) {
+		} else if (mode.equals(ALUUtils.GREEQ)) {
 			sub(a, b, result);
-			if (!result[0]) {
-				BitsUtils.set(result, zero);
-				BitsUtils.setEnd(result, true);
+			if (!result.get(0).get()) {
+				//BitsUtils.set(result, zero);
+				result = zero.clone();
+				//BitsUtils.setEnd(result, true);
+				result.set(result.size() - 1, true);
 			} else {
-				BitsUtils.set(result, zero);
+				// BitsUtils.set(result, zero);
+				result.set(result.size() - 1, true);
 			}
 		}/* else if (Arrays.equals(mode, ALUUtils.LOAD)) {
 
@@ -141,49 +156,49 @@ public class ALU {
 	}
 
 	// FIXME: fare questo meglio!
-	private boolean thereAreAnyTrues(boolean[] in, int offset) {
-		for (int i = offset; i < in.length; i++) {
-			orGate.set(i - offset, in[i]);
+	private boolean thereAreAnyTrues(BitStream in, int offset) {
+		for (int i = offset; i < in.size(); i++) {
+			orGate.set(i - offset, in.get(i));
 		}
-		for (int i = in.length - offset; i < orGate.size(); i++) {
-			orGate.set(i, false);
+		for (int i = in.size() - offset; i < orGate.size(); i++) {
+			orGate.set(i, new Bit(false));
 		}
 		orGate.clock();
-		return orGate.get();
+		return orGate.get().get();
 	}
 
-	private static void and(boolean[] a, boolean[] b, boolean[] res) {
-		for (int i = 0; i < a.length; i++) {
-			res[i] = Circuits.and(a[i], b[i]);
+	private static void and(BitStream a, BitStream b, BitStream res) {
+		for (int i = 0; i < a.size(); i++) {
+			res.set(i, Circuits.and(a.get(i).get(), b.get(i).get()));
 		}
 	}
 
-	private static void or(boolean[] a, boolean[] b, boolean[] res) {
-		for (int i = 0; i < a.length; i++) {
-			res[i] = Circuits.or(a[i], b[i]);
+	private static void or(BitStream a, BitStream b, BitStream res) {
+		for (int i = 0; i < a.size(); i++) {
+			res.set(i, Circuits.or(a.get(i).get(), b.get(i).get()));
 		}
 	}
 
-	private static void not(boolean[] a, boolean[] res) {
-		for (int i = 0; i < a.length; i++) {
-			res[i] = Circuits.not(a[i]);
+	private static void not(BitStream a, BitStream res) {
+		for (int i = 0; i < a.size(); i++) {
+			res.set(i, Circuits.not(a.get(i).get()));
 		}
 	}
 
-	private static void add(boolean[] a, boolean[] b, boolean[] res) {
+	private static void add(BitStream a, BitStream b, BitStream res) {
 		boolean carryIn = false;
-		for (int i = a.length - 1; i >= 0; i--) {
-			boolean[] added = Circuits.adder(a[i], b[i], carryIn);
-			res[i] = added[0];
+		for (int i = a.size() - 1; i >= 0; i--) {
+			boolean[] added = Circuits.adder(a.get(i).get(), b.get(i).get(), carryIn);
+			res.set(i, added[0]);
 			carryIn = added[1];
 		}
 	}
 
-	private static void sub(boolean[] a, boolean[] b, boolean[] res) {
+	private static void sub(BitStream a, BitStream b, BitStream res) {
 		boolean carryIn = true;
-		for (int i = a.length - 1; i >= 0; i--) {
-			boolean[] added = Circuits.adder(a[i], Circuits.not(b[i]), carryIn);
-			res[i] = added[0];
+		for (int i = a.size() - 1; i >= 0; i--) {
+			boolean[] added = Circuits.adder(a.get(i).get(), Circuits.not(b.get(i).get()), carryIn);
+			res.set(i, added[0]);
 			carryIn = added[1];
 		}
 	}

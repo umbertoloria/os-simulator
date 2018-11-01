@@ -1,5 +1,8 @@
 package com.umbertoloria;
 
+import com.umbertoloria.bittings.Bit;
+import com.umbertoloria.bittings.BitStream;
+import com.umbertoloria.integrates.MUX;
 import com.umbertoloria.utils.InstructionUtils;
 
 class Computer {
@@ -13,7 +16,7 @@ class Computer {
 	// TODO: Implement a Control Unit!
 
 	void setInstr(boolean[] instr) {
-		this.instr = instr.clone();
+		this.instr = instr;
 	}
 
 	void clock() {
@@ -23,54 +26,66 @@ class Computer {
 		im.clock();
 
 		// Fase Control Unit
-		cu.set(im.getInstr());
+		cu.set(im.get());
 		cu.clock();
-		boolean READFLAG1 = cu.getReadFlag1();
-		boolean READFLAG2 = cu.getReadFlag2();
-		boolean WRITEFLAG = cu.getWriteFlag();
-		boolean ALUSRC1 = cu.getAluSrc1();
-		boolean ALUSRC2 = cu.getAluSrc2();
-		boolean[] OPERATOR1 = cu.getOP1();
-		boolean[] OPERATOR2 = cu.getOP2();
-		boolean[] WRITEREGISTER = cu.getWriteRegister();
-		boolean[] ALUMODE = cu.getAluMode();
-		// TODO: MEMOTOREG?
+		Bit READFLAG1 = cu.getReadFlag1();
+		Bit READFLAG2 = cu.getReadFlag2();
+		Bit WRITEFLAG = cu.getWriteFlag();
+		Bit ALUSRC1 = cu.getAluSrc1();
+		Bit ALUSRC2 = cu.getAluSrc2();
+		BitStream OPERATOR1 = cu.getOP1();
+		BitStream OPERATOR2 = cu.getOP2();
+		BitStream WRITEREGISTER = cu.getWriteRegister();
+		BitStream ALUMODE = cu.getAluMode();
+		// TODO: MEMTOREG?
 
-		// Fase 1 Registri
+		// Fase Lettura Registri
 		regs.setReadFlag1(READFLAG1);
-		if (READFLAG1) {
+		if (READFLAG1.get()) { // TODO: togliere
 			regs.setReadReg1(OPERATOR1);
 		}
-		regs.setReadFlag1(READFLAG2);
-		if (READFLAG2) {
+
+		regs.setReadFlag2(READFLAG2);
+		if (READFLAG2.get()) { // TODO: togliere
 			regs.setReadReg2(OPERATOR2);
 		}
 		regs.clock();
-		boolean[] READDATA1 = regs.getData1();
-		boolean[] READDATA2 = regs.getData2();
+		BitStream READDATA1 = regs.getData1();
+		BitStream READDATA2 = regs.getData2();
 
 		// Fase Arithmetic-Logic Unit
-		if (ALUSRC1) {
+
+
+		MUX alusrc1mux = new MUX(ALUSRC1);
+		alusrc1mux.set(0, READDATA1);
+		alusrc1mux.set(1, OPERATOR1);
+		alusrc1mux.clock();
+		alu.setA(alusrc1mux.get());
+		/*if (ALUSRC1.get()) {
 			alu.setA(OPERATOR1);
 		} else {
 			alu.setA(READDATA1);
-		}
-		if (ALUSRC2) {
+		}*/
+		MUX alusrc2mux = new MUX(ALUSRC2);
+		alusrc2mux.set(1, OPERATOR2);
+		alusrc2mux.set(0, READDATA2);
+		alusrc2mux.clock();
+		alu.setB(alusrc2mux.get());
+		/*if (ALUSRC2.get()) {
 			alu.setB(OPERATOR2);
 		} else {
 			alu.setB(READDATA2);
-		}
+		}*/
 		alu.setMode(ALUMODE);
 		alu.clock();
-		boolean[] ALURESULT = alu.getResult();
+		BitStream ALURESULT = alu.getResult();
 		// Memory?
 
-		// Fase 2 Registri
+		// Fase Scrittura Registri
 		regs.setWriteFlag(WRITEFLAG);
 		regs.setWriteReg(WRITEREGISTER);
 		regs.setWriteData(ALURESULT);
 		regs.clockBack();
-		System.exit(1);
 
 
 

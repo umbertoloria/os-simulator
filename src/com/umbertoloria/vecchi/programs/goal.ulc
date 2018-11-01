@@ -18,5 +18,5 @@ a  < b  // low a b
 a <= b  // low b a (negata)
 a  > b  // gre a b
 a >= b  // gre b a (negata)
-a == b  // eqa a b
-a != b  // eqa a b (negata)
+a == b  // equ a b
+a != b  // equ a b (negata)

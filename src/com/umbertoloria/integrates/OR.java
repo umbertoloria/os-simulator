@@ -1,19 +1,21 @@
 package com.umbertoloria.integrates;
 
+import com.umbertoloria.bittings.Bit;
+
 public class OR {
 
-	private boolean[] in;
-	private boolean out;
+	private Bit[] in;
+	private Bit out;
 
 	public OR(int size) {
-		in = new boolean[size];
+		in = new Bit[size];
 	}
 
-	public void set(int index, boolean val) {
+	public void set(int index, Bit val) {
 		in[index] = val;
 	}
 
-	public boolean get() {
+	public Bit get() {
 		return out;
 	}
 
@@ -27,13 +29,13 @@ public class OR {
 	}
 
 	public void clock() {
-		for (boolean b : in) {
-			if (b) {
-				out = true;
+		for (Bit b : in) {
+			if (b.get()) {
+				out.enable();
 				return;
 			}
 		}
-		out = false;
+		out.disable();
 	}
 
 }

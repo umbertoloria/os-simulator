@@ -20,4 +20,27 @@ public class Circuits {
 		return !a;
 	}
 
+	/*
+
+	public static Bit[] adder(Bit a, Bit b, Bit carryIn) {
+		Bit carryOut = new Bit((!a.get() && b.get() && carryIn.get()) || (a.get() && (b.get() || carryIn.get())));
+		Bit s = new Bit((!a.get() && !b.get() && carryIn.get()) || (!a.get() && b.get() && !carryIn.get()) ||
+				(a.get() && !b.get() && !carryIn.get()) || (a.get() && b.get() && carryIn.get()));
+		return new Bit[]{s, carryOut};
+	}
+
+	public static Bit and(Bit a, Bit b) {
+		return new Bit(a.get() && b.get());
+	}
+
+	public static Bit or(Bit a, Bit b) {
+		return new Bit(a.get() || b.get());
+	}
+
+	public static Bit not(Bit a) {
+		return new Bit(!a.get());
+	}
+
+	 */
+
 }

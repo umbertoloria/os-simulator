@@ -1,24 +1,26 @@
 package com.umbertoloria;
 
+import com.umbertoloria.bittings.BitStream;
 import com.umbertoloria.utils.BitsUtils;
 import com.umbertoloria.utils.InstructionUtils;
 
 public class IM {
 
-	boolean[] instr = new boolean[InstructionUtils.MAX_INSTRUCTION_SIZE];
-	// boolean[] op1, op2; FIXME: definire bene le cose.
+	private boolean[] in = new boolean[InstructionUtils.MAX_INSTRUCTION_SIZE];
+	private BitStream out = new BitStream(InstructionUtils.MAX_INSTRUCTION_SIZE);
 
 	// TODO: Dopo prenderà un indirizzo di memoria anzicchè l'istruzione pronta.
-	public void set(boolean[] instr) {
-		BitsUtils.set(this.instr, instr);
+	public void set(boolean[] addr) {
+		BitsUtils.set(this.in, addr);
 	}
 
-	void clock () {
+	void clock() {
 		// TODO: un giorno preverò davvero dalla memoria istruzioni... :(
+		out.set(in);
 	}
 
-	boolean[] getInstr() {
-		return instr.clone(); // TODO: verificare se clonare o no.
+	BitStream get() {
+		return out;
 	}
 
 }
