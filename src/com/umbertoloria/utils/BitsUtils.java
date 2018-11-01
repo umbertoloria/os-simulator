@@ -43,6 +43,7 @@ public class BitsUtils {
 		return offset + x.length;
 	}
 
+	// Subs
 	public static boolean[] truncate(boolean[] x, int length) {
 		boolean[] res = new boolean[length];
 		System.arraycopy(x, 0, res, 0, length);
@@ -61,6 +62,25 @@ public class BitsUtils {
 		return res;
 	}
 
+	public static boolean[] sub(boolean[] x, int from, int to) {
+		boolean[] res = new boolean[to - from];
+		for (int i = 0; i < res.length; i++) {
+			res[i] = x[from + i];
+		}
+		return res;
+	}
+
+	public static boolean[] sub(boolean[] x, int from, int to, boolean[] res) {
+		if (res.length != to - from) {
+			throw new RuntimeException("len must be " + (to - from));
+		}
+		for (int i = 0; i < res.length; i++) {
+			res[i] = x[from + i];
+		}
+		return res;
+	}
+
+	// Conditions
 	public static boolean endsWith(boolean[] a, boolean[] check) {
 		int offset = a.length - check.length;
 		int i;

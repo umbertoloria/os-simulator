@@ -1,4 +1,4 @@
-package com.umbertoloria;
+package com.umbertoloria.altro;
 
 import java.util.ArrayList;
 import java.util.Scanner;

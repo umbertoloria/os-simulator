@@ -3,6 +3,7 @@ package com.umbertoloria;
 import com.umbertoloria.utils.BitsUtils;
 import com.umbertoloria.utils.RegistersUtils;
 
+// TODO: togliere funzionalità di trasporto passivo dei dati!
 public class Registers {
 
 	private boolean[] PC = new boolean[Computer.ARCH];
@@ -26,24 +27,24 @@ public class Registers {
 	private boolean[] writeData = new boolean[Computer.ARCH];
 
 	/**
-	 * Sets the First Register Read Flag.
-	 * @param set will be the new first register read flag
+	 Sets the First Register Read Flag.
+	 @param set will be the new first register read flag
 	 */
 	void setReadFlag1(boolean set) {
 		this.readFlag1 = set;
 	}
 
 	/**
-	 * Sets the Second Register Read Flag.
-	 * @param set will be the new second register read flag
+	 Sets the Second Register Read Flag.
+	 @param set will be the new second register read flag
 	 */
 	void setReadFlag2(boolean set) {
 		this.readFlag2 = set;
 	}
 
 	/**
-	 * Sets the Register Write Flag.
-	 * @param set will be the new register write flag
+	 Sets the Register Write Flag.
+	 @param set will be the new register write flag
 	 */
 	void setWriteFlag(boolean set) {
 		this.writeFlag = set;
@@ -97,6 +98,9 @@ public class Registers {
 	void clockBack() {
 		if (writeFlag) {
 			BitsUtils.set(getRegisterData(writeReg), writeData);
+			System.out.println("Setting ");
+			BitsUtils.print(writeData);
+			System.out.println("on register " + RegistersUtils.getRegisterName(writeReg));
 		}
 	}
 

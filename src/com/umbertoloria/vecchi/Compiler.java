@@ -29,9 +29,10 @@ public class Compiler {
 			}
 		}
 
-		index = BitsUtils.append(instruction, index, InstructionUtils.getInstructionCode(p[0]));
+		//index = BitsUtils.append(instruction, index, InstructionUtils.getInstructionCode(p[0]));
+		boolean[] partone = new boolean[InstructionUtils.INSTRUCTION_CODE_SIZE];
 
-		if (InstructionUtils.isALUInstructionName(p[0])) {
+		if (InstructionUtils.isALUSTDInstructionName(p[0])) {
 
 			boolean[] a = getRegisterOrConst(first);
 			index = BitsUtils.append(instruction, index, a.length == RegistersUtils.REGISTERS_SIZE);

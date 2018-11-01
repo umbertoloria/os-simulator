@@ -32,6 +32,25 @@ public class RegistersUtils {
 		throw new RuntimeException();
 	}
 
+	public static String getRegisterName(boolean[] code) {
+		if (BitsUtils.equals(code, PC_CODE)) {
+			return "PC";
+		} else if (BitsUtils.equals(code, AR_CODE)) {
+			return "AR";
+		} else if (BitsUtils.equals(code, LR_CODE)) {
+			return "LR";
+		} else if (BitsUtils.equals(code, MR_CODE)) {
+			return "MR";
+		} else if (BitsUtils.equals(code, CR_CODE)) {
+			return "CR";
+		} else if (BitsUtils.equals(code, OR1_CODE)) {
+			return "OR1";
+		} else if (BitsUtils.equals(code, OR2_CODE)) {
+			return "OR2";
+		}
+		throw new RuntimeException();
+	}
+
 	public static boolean isRegisterCode(boolean[] a) {
 		return BitsUtils.endsWith(a, PC_CODE) || BitsUtils.endsWith(a, AR_CODE) || BitsUtils.endsWith(a, LR_CODE) ||
 				BitsUtils.endsWith(a, MR_CODE) || BitsUtils.endsWith(a, CR_CODE) || BitsUtils.endsWith(a, OR1_CODE) ||

@@ -1,4 +1,4 @@
-package com.umbertoloria;
+package com.umbertoloria.altro;
 
 public class AssInstr {
 
