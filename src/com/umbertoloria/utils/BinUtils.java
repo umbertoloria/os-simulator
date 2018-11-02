@@ -1,6 +1,6 @@
 package com.umbertoloria.utils;
 
-public class BinaryUtils {
+public class BinUtils {
 
 	public static String toStr(boolean[] n) {
 		StringBuilder str = new StringBuilder();
@@ -104,7 +104,7 @@ public class BinaryUtils {
 
 	public static boolean not(boolean[] a, boolean[] res) {
 		for (int i = 0; i < a.length; i++) {
-			res[i] = ALU.not(a[i]);
+			res[i] = ArithmeticLogicUnit.not(a[i]);
 		}
 		return true;
 	}*/

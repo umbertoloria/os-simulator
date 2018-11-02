@@ -2,12 +2,12 @@ package com.umbertoloria.integrates;
 
 import com.umbertoloria.bittings.Bit;
 
-public class OR {
+public class AND {
 
 	private Bit[] in;
 	private Bit out;
 
-	public OR(int size) {
+	public AND(int size) {
 		in = new Bit[size];
 	}
 
@@ -15,18 +15,14 @@ public class OR {
 		in[index] = val;
 	}
 
-	public int size() {
-		return in.length;
-	}
-
 	public void clock() {
 		for (Bit b : in) {
-			if (b.get()) {
-				out.enable();
+			if (!b.get()) {
+				out.disable();
 				return;
 			}
 		}
-		out.disable();
+		out.enable();
 	}
 
 	public Bit get() {

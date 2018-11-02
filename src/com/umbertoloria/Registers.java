@@ -1,146 +1,160 @@
 package com.umbertoloria;
 
 import com.umbertoloria.bittings.Bit;
-import com.umbertoloria.bittings.BitStream;
+import com.umbertoloria.bittings.Bite;
 import com.umbertoloria.utils.RegistersUtils;
 
-// TODO: togliere funzionalità di trasporto passivo dei dati!
-public class Registers {
+class Registers {
 
-	private BitStream PC = new BitStream(Computer.ARCH); // = new boolean[Computer.ARCH];
-	private BitStream AR = new BitStream(Computer.ARCH); // = new boolean[Computer.ARCH];
-	private BitStream LR = new BitStream(Computer.ARCH); // = new boolean[Computer.ARCH];
-	private BitStream MR = new BitStream(Computer.ARCH); // = new boolean[Computer.ARCH];
-	private BitStream CR = new BitStream(Computer.ARCH); // = new boolean[Computer.ARCH];
-	private BitStream OR1 = new BitStream(Computer.ARCH); // = new boolean[Computer.ARCH];
-	private BitStream OR2 = new BitStream(Computer.ARCH); // = new boolean[Computer.ARCH];
+	//private Bit[] PC = Bite.initSet(Computer.ARCH, false);
+	private Bit[] AR = Bite.initSet(Computer.ARCH, false);
+	private Bit[] LR = Bite.initSet(Computer.ARCH, false);
+	private Bit[] MR = Bite.initSet(Computer.ARCH, false);
+	private Bit[] CR = Bite.initSet(Computer.ARCH, false);
+	private Bit[] OR1 = Bite.initSet(Computer.ARCH, false);
+	private Bit[] OR2 = Bite.initSet(Computer.ARCH, false);
 
-	private Bit readFlag1;
-	private BitStream readReg1;// = new boolean[Computer.ARCH];
-	private BitStream readData1;
-
-	private Bit readFlag2;
-	private BitStream readReg2;// = new boolean[Computer.ARCH];
-	private BitStream readData2;
-
-	private Bit writeFlag;
-	private BitStream writeReg;// = new boolean[RegistersUtils.REGISTERS_SIZE];
-	private BitStream writeData;// = new boolean[Computer.ARCH];
+	private Bit readFlag1, readFlag2, writeFlag;
+	private Bit[] readReg1, readReg2, writeReg, writeData;
+	private Bit[] readData1 = new Bit[64];
+	private Bit[] readData2 = new Bit[64];
 
 	/**
-	 Sets the First Register Read Flag.
-	 @param set will be the new first register read flag
+	 * Sets the First Read Register Flag.
+	 * @param set will be the new first read register flag
 	 */
 	void setReadFlag1(Bit set) {
 		this.readFlag1 = set;
 	}
 
 	/**
-	 Sets the Second Register Read Flag.
-	 @param set will be the new second register read flag
+	 * Sets the Second Read Register Flag.
+	 * @param set will be the new second read register flag
 	 */
 	void setReadFlag2(Bit set) {
 		this.readFlag2 = set;
 	}
 
 	/**
-	 Sets the Register Write Flag.
-	 @param set will be the new register write flag
+	 * Sets the First Read Register Address.
+	 * @param save will be the new read register address
+	 */
+	void setReadReg1(Bit[] save) {
+		readReg1 = save;
+	}
+
+	/**
+	 * Sets the Second Read Register Address.
+	 * @param save will be the new read register address
+	 */
+	void setReadReg2(Bit[] save) {
+		readReg2 = save;
+	}
+
+	/**
+	 * Checks the Read Flags and sets the data from the Read Registers on the Read Data.
+	 */
+	void clock() {
+		if (readFlag1.get()) {
+			Bite.linkLeft(readData1, getRegisterData(readReg1));
+		}
+		if (readFlag2.get()) {
+			Bite.linkLeft(readData2, getRegisterData(readReg2));
+		}
+	}
+
+	/**
+	 * Gets the content of the First Read Register.
+	 * @return the first read register
+	 */
+	Bit[] getData1() {
+		return readData1;
+	}
+
+	/**
+	 * Gets the content of the Second Read Register.
+	 * @return the second read register
+	 */
+	Bit[] getData2() {
+		return readData2;
+	}
+
+	/**
+	 * Sets the Write Register Flag.
+	 * @param set will be the new write register flag
 	 */
 	void setWriteFlag(Bit set) {
 		this.writeFlag = set;
 	}
 
-	void setReadReg1(BitStream save) {
-		if (RegistersUtils.isRegisterCode(save)) {
-			//BitsUtils.setEnd(readReg1, save);
-			readReg1 = save;
-		} else {
-			throw new RuntimeException("read reg 1 deve essere un reg");
+	/**
+	 * Sets the Write Register Address.
+	 * @param save will be the new write register address
+	 */
+	void setWriteReg(Bit[] save) {
+		writeReg = save;
+	}
+
+	/**
+	 * Sets the Write Data that will be saved on the Write Register.
+	 * @param data will replace the data to write
+	 */
+	void setWriteData(Bit[] data) {
+		if (data.length == Computer.ARCH) {
+			writeData = data;
 		}
 	}
 
-	void setReadReg2(BitStream save) {
-		if (RegistersUtils.isRegisterCode(save)) {
-			//BitsUtils.setEnd(readReg2, save);
-			readReg2 = save;
-		} else {
-			throw new RuntimeException("read reg 2 deve essere un reg");
-		}
-	}
-
-	void setWriteReg(BitStream save) {
-		if (RegistersUtils.isRegisterCode(save)) {
-			//BitsUtils.set(writeReg, save);
-			writeReg = save;
-		} else {
-			throw new RuntimeException("write reg deve essere un reg");
-		}
-	}
-
-	void setWriteData(BitStream a) {
-		if (a.size() == Computer.ARCH) {
-			//BitsUtils.set(writeData, a);
-			writeData = a;
-		}
-	}
-
-	void clock() {
-		BitStream save1 = readReg1;
-		if (readFlag1.get()) {
-			save1 = getRegisterData(save1);
-		}
-		//BitsUtils.set(readData1, save1);
-		readData1 = save1;
-		BitStream save2 = readReg2;
-		if (readFlag2.get()) {
-			save2 = getRegisterData(save2);
-		}
-		//BitsUtils.set(readData2, save2);
-		readData2 = save2;
-		if (readFlag1.get()) {
-			readData1 = getRegisterData(readReg1);
-		} else {
-			readData1 = readReg1;
-		}
-		if (readFlag2.get()) {
-			readData2 = getRegisterData(readReg2);
-		} else {
-			readData2 = readReg2;
-		}
-	}
-
+	/**
+	 * Checks the Write Flag and writes the content of the Write Data in the Write Register.
+	 */
 	void clockBack() {
 		if (writeFlag.get()) {
-			// TODO: fonderli?
-			//BitsUtils.set(getRegisterData(writeReg), writeData);
-			getRegisterData(writeReg).set(writeData);
-			System.out.println("Setting " + writeData + " on register " + RegistersUtils.getRegisterName(writeReg));
+			Bite.linkLeft(getRegisterData(writeReg), writeData);
+			//System.out.println(RegistersUtils.getRegisterName(Bite.toBools(writeReg)) + " = " + Bite.str(writeData));
 		}
 	}
 
-	BitStream getData1() {
-		return readData1;//.clone();
+	/**
+	 * Gets what's stored in a Register in a easy-to-read format.
+	 * @param reg we want to be told about
+	 * @param hex if true returns in 16 hex, otherwise in 64 bin.
+	 * @return the easy-to-read string
+	 */
+	String getRegContent(boolean[] reg, boolean hex) {
+		Bit[] content = getRegisterData(Bite.toBits(reg));
+		int val;
+		StringBuilder sb = new StringBuilder();
+		if (hex) {
+			for (int i = 0; i < content.length / 4; i++) {
+				val = 0;
+				for (int j = 0; j < 4; j++) {
+					if (content[i * 4 + j].get()) {
+						val += Math.pow(2, 3 - j);
+					}
+				}
+				sb.append(Integer.toHexString(val));
+			}
+		} else {
+			for (Bit bit : content) {
+				sb.append(bit.get() ? '1' : '0');
+			}
+		}
+		return sb.toString().toUpperCase();
 	}
 
-	BitStream getData2() {
-		return readData2;//.clone();
-	}
-
-	private BitStream getRegisterData(BitStream reg) {
-		if (reg.equals(RegistersUtils.PC_C)) {
-			return PC;
-		} else if (reg.equals(RegistersUtils.AR_C)) {
+	private Bit[] getRegisterData(Bit[] reg) {
+		if (Bite.endsWith(reg, RegistersUtils.AR_C)) {
 			return AR;
-		} else if (reg.equals(RegistersUtils.LR_C)) {
+		} else if (Bite.endsWith(reg, RegistersUtils.LR_C)) {
 			return LR;
-		} else if (reg.equals(RegistersUtils.MR_C)) {
+		} else if (Bite.endsWith(reg, RegistersUtils.MR_C)) {
 			return MR;
-		} else if (reg.equals(RegistersUtils.CR_C)) {
+		} else if (Bite.endsWith(reg, RegistersUtils.CR_C)) {
 			return CR;
-		} else if (reg.equals(RegistersUtils.OR1_C)) {
+		} else if (Bite.endsWith(reg, RegistersUtils.OR1_C)) {
 			return OR1;
-		} else if (reg.equals(RegistersUtils.OR2_C)) {
+		} else if (Bite.endsWith(reg, RegistersUtils.OR2_C)) {
 			return OR2;
 		}
 		throw new RuntimeException("Abbiamo un non-registro in writeReg");

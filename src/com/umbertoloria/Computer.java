@@ -1,157 +1,115 @@
 package com.umbertoloria;
 
 import com.umbertoloria.bittings.Bit;
-import com.umbertoloria.bittings.BitStream;
+import com.umbertoloria.bittings.Bite;
 import com.umbertoloria.integrates.MUX;
-import com.umbertoloria.utils.InstructionUtils;
+import com.umbertoloria.utils.RegistersUtils;
 
-class Computer {
+public class Computer {
 
-	static final int ARCH = 64;
-	private boolean[] instr = new boolean[InstructionUtils.MAX_INSTRUCTION_SIZE];
+	public static final int ARCH = 64;
+	private boolean[] instr; // = new boolean[InstructionUtils.MAX_INSTRUCTION_SIZE];
+
+	private ProgramCounter programCounter = new ProgramCounter();
+	private Memory memory = new Memory();
+	private ControlUnit controlUnit = new ControlUnit();
 	private Registers regs = new Registers();
-	private ALU alu = new ALU();
-	private CU cu = new CU();
-	private IM im = new IM();
+	private MUX aluSrc1Mux = new MUX();
+	private MUX aluSrc2Mux = new MUX();
+	private ArithmeticLogicUnit arithmeticLogicUnit = new ArithmeticLogicUnit();
 	// TODO: Implement a Control Unit!
 
-	void setInstr(boolean[] instr) {
-		this.instr = instr;
+	void newInstr(String instr, int index) {
+		StringBuilder extendedInstr = new StringBuilder();
+		extendedInstr.append(instr);
+		while (extendedInstr.length() <= 64 * 3) {
+			extendedInstr.append("0");
+		}
+		memory.addInstr(Bite.toBits(extendedInstr.toString()), index * 3);
 	}
 
-	void clock() {
+	void registerStatus(boolean hex) {
+		String AR = regs.getRegContent(RegistersUtils.AR_C, hex);
+		String LR = regs.getRegContent(RegistersUtils.LR_C, hex);
+		String CR = regs.getRegContent(RegistersUtils.CR_C, hex);
+		String MR = regs.getRegContent(RegistersUtils.MR_C, hex);
+		String OR1 = regs.getRegContent(RegistersUtils.OR1_C, hex);
+		String OR2 = regs.getRegContent(RegistersUtils.OR2_C, hex);
+		System.out.print("+---------------------------");
+		if (hex) {
+			System.out.println("-----------------+");
+		} else {
+			System.out.println("-----------------------------------------------------------------+");
+		}
+		System.out.println("| Arithmetical Register   | " + AR + " |");
+		System.out.println("|      Logical Register   | " + LR + " |");
+		System.out.println("|    Condition Register   | " + CR + " |");
+		System.out.println("|       Memory Register   | " + MR + " |");
+		System.out.println("|        Other Register 1 | " + OR1 + " |");
+		System.out.println("|        Other Register 2 | " + OR2 + " |");
+		System.out.print("+---------------------------");
+		if (hex) {
+			System.out.println("-----------------+");
+		} else {
+			System.out.println("-----------------------------------------------------------------+");
+		}
+	}
 
-		// Fase Instruction Memory
-		im.set(instr);
-		im.clock();
-
-		// Fase Control Unit
-		cu.set(im.get());
-		cu.clock();
-		Bit READFLAG1 = cu.getReadFlag1();
-		Bit READFLAG2 = cu.getReadFlag2();
-		Bit WRITEFLAG = cu.getWriteFlag();
-		Bit ALUSRC1 = cu.getAluSrc1();
-		Bit ALUSRC2 = cu.getAluSrc2();
-		BitStream OPERATOR1 = cu.getOP1();
-		BitStream OPERATOR2 = cu.getOP2();
-		BitStream WRITEREGISTER = cu.getWriteRegister();
-		BitStream ALUMODE = cu.getAluMode();
-		// TODO: MEMTOREG?
-
-		// Fase Lettura Registri
+	Computer() {
+		// PC
+		Bit[] INSTRUCTION_ADDRESS = programCounter.get();
+		// IM
+		memory.set(INSTRUCTION_ADDRESS);
+		Bit[] INSTR = memory.get();
+		controlUnit.set(INSTR);
+		// CU
+		Bit READFLAG1 = controlUnit.getReadFlag1();
+		Bit READFLAG2 = controlUnit.getReadFlag2();
+		Bit WRITEFLAG = controlUnit.getWriteFlag();
+		Bit ALUSRC1 = controlUnit.getALUSRC1();
+		Bit ALUSRC2 = controlUnit.getALUSRC2();
+		Bit[] OPERATOR1 = controlUnit.getOP1();
+		Bit[] OPERATOR2 = controlUnit.getOP2();
+		Bit[] WRITEREGISTER = controlUnit.getWriteRegister();
+		Bit[] ALUMODE = controlUnit.getALUMODE();
+//		TODO: MEMTOREG?
+		// Read REGs
 		regs.setReadFlag1(READFLAG1);
-		if (READFLAG1.get()) { // TODO: togliere
-			regs.setReadReg1(OPERATOR1);
-		}
-
 		regs.setReadFlag2(READFLAG2);
-		if (READFLAG2.get()) { // TODO: togliere
-			regs.setReadReg2(OPERATOR2);
-		}
-		regs.clock();
-		BitStream READDATA1 = regs.getData1();
-		BitStream READDATA2 = regs.getData2();
-
-		// Fase Arithmetic-Logic Unit
-
-
-		MUX alusrc1mux = new MUX(ALUSRC1);
-		alusrc1mux.set(0, READDATA1);
-		alusrc1mux.set(1, OPERATOR1);
-		alusrc1mux.clock();
-		alu.setA(alusrc1mux.get());
-		/*if (ALUSRC1.get()) {
-			alu.setA(OPERATOR1);
-		} else {
-			alu.setA(READDATA1);
-		}*/
-		MUX alusrc2mux = new MUX(ALUSRC2);
-		alusrc2mux.set(1, OPERATOR2);
-		alusrc2mux.set(0, READDATA2);
-		alusrc2mux.clock();
-		alu.setB(alusrc2mux.get());
-		/*if (ALUSRC2.get()) {
-			alu.setB(OPERATOR2);
-		} else {
-			alu.setB(READDATA2);
-		}*/
-		alu.setMode(ALUMODE);
-		alu.clock();
-		BitStream ALURESULT = alu.getResult();
-		// Memory?
-
-		// Fase Scrittura Registri
+		regs.setReadReg1(OPERATOR1);
+		regs.setReadReg2(OPERATOR2);
+		Bit[] READDATA1 = regs.getData1();
+		Bit[] READDATA2 = regs.getData2();
+		// ALU
+		aluSrc1Mux.setS(ALUSRC1);
+		aluSrc1Mux.set(0, READDATA1);
+		aluSrc1Mux.set(1, OPERATOR1);
+		aluSrc2Mux.setS(ALUSRC2);
+		aluSrc2Mux.set(0, READDATA2);
+		aluSrc2Mux.set(1, OPERATOR2);
+		Bit[] ALUSRC1OUT = aluSrc1Mux.get();
+		Bit[] ALUSRC2OUT = aluSrc2Mux.get();
+		arithmeticLogicUnit.setA(ALUSRC1OUT);
+		arithmeticLogicUnit.setB(ALUSRC2OUT);
+		arithmeticLogicUnit.setMode(ALUMODE);
+		// Write REGs
+		Bit[] ALURESULT = arithmeticLogicUnit.getResult();
 		regs.setWriteFlag(WRITEFLAG);
 		regs.setWriteReg(WRITEREGISTER);
 		regs.setWriteData(ALURESULT);
-		regs.clockBack();
+	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-		if (InstructionUtils.isALUSTDInstructionCode(instrCode)) {
-			boolean roc1 = instr[0];
-			boolean roc2 = instr[1];
-			boolean[] d1, d2;
-			instr = BitsUtils.startFrom(instr, 2);
-			if (roc1) {
-				regs.setReadFlag1(true);
-				regs.setReadReg1(BitsUtils.truncate(instr, 3));
-				instr = BitsUtils.startFrom(instr, 3);
-			} else {
-				regs.setReadFlag1(true);
-				/*regs.setReadReg1(BitsUtils.truncate(instr, 64));*
-				d1 = BitsUtils.truncate(instr, 64);
-				instr = BitsUtils.startFrom(instr, 64);
-			}
-			if (roc2) {
-				regs.setReadFlag2(true);
-				regs.setReadReg2(BitsUtils.truncate(instr, 3));
-				instr = BitsUtils.startFrom(instr, 3);
-			} else {
-				regs.setReadFlag2(true);
-				d2 = BitsUtils.truncate(instr, 64);
-				/*regs.setReadReg2(BitsUtils.truncate(instr, 64));*
-				// TODO: forse non serve instr = BitsUtils.startFrom(instr, 64);
-			}
-			regs.setWriteFlag(true);
-		}
-
+	void clock() {
+		programCounter.clock();
+		memory.clock();
+		controlUnit.clock();
 		regs.clock();
-
-		if (cu.aluSrc1()) {
-			alu.setA(regs.getData1());
-		} else {
-
-		}
-
-		alu.setA(regs.getData1());
-		alu.setB(regs.getData2());
-		// TODO: uscire l'ALU mode
-		alu.setMode(ALUUtils.getALUMode(instrCode));
-		alu.clock();
-		// FIXME: configurare bene il registro di salvataggio
-		regs.setWriteReg(RegistersUtils.getRegisterCode("AR"));
-		regs.setWriteData(alu.getOUT());
+		aluSrc1Mux.clock();
+		aluSrc2Mux.clock();
+		arithmeticLogicUnit.clock();
+		// memory
 		regs.clockBack();
-*/
+		Bit.instructions++;
 	}
 
 }

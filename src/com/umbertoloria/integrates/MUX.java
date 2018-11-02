@@ -1,28 +1,29 @@
 package com.umbertoloria.integrates;
 
+import com.umbertoloria.Computer;
 import com.umbertoloria.bittings.Bit;
-import com.umbertoloria.bittings.BitStream;
+import com.umbertoloria.bittings.Bite;
 
 public class MUX {
 
-	private BitStream[] in = new BitStream[2];
-	//private boolean[] s;
+	private Bit[][] in = new Bit[2][Computer.ARCH];
 	private Bit s;
-	private BitStream out;
+	private Bit[] out = new Bit[Computer.ARCH];
 
-	public MUX (Bit s) {
+	public void setS(Bit s) {
 		this.s = s;
 	}
 
-	public void set(int index, BitStream set) {
+	public void set(int index, Bit[] set) {
 		in[index] = set;
 	}
 
 	public void clock() {
-		out = in[s.get() ? 1 : 0];
+		//out = in[s.get() ? 1 : 0];
+		Bite.linkLeft(out, in[s.get() ? 1 : 0]);
 	}
 
-	public BitStream get() {
+	public Bit[] get() {
 		return out;
 	}
 

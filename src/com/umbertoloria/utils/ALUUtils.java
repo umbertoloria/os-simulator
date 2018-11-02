@@ -1,31 +1,29 @@
 package com.umbertoloria.utils;
 
-import com.umbertoloria.bittings.BitStream;
-
 public class ALUUtils {
 
 	public static final int ALUMODE_SIZE = 4;
-	public static final BitStream AND = new BitStream("0000");
-	public static final BitStream OR = new BitStream("0001");
-	public static final BitStream NOT = new BitStream("0010");
-	public static final BitStream ADD = new BitStream("0011");
-	public static final BitStream SUB = new BitStream("0100");
-	public static final BitStream GOTV = new BitStream("0101");
-	public static final BitStream GOTF = new BitStream("0110");
-	public static final BitStream EQU = new BitStream("0111");
-	public static final BitStream DIFF = new BitStream("1000");
-	public static final BitStream LOW = new BitStream("1001");
-	public static final BitStream LOWEQ = new BitStream("1010");
-	public static final BitStream GRE = new BitStream("1011");
-	public static final BitStream GREEQ = new BitStream("1100");
-	public static final BitStream LOAD = ADD;
-	public static final BitStream STORE = ADD;
+	public static final boolean[] AND = BinUtils.toRawBools("0000");
+	public static final boolean[] OR = BinUtils.toRawBools("0001");
+	public static final boolean[] NOT = BinUtils.toRawBools("0010");
+	public static final boolean[] ADD = BinUtils.toRawBools("0011");
+	public static final boolean[] SUB = BinUtils.toRawBools("0100");
+	public static final boolean[] GOTV = BinUtils.toRawBools("0101");
+	public static final boolean[] GOTF = BinUtils.toRawBools("0110");
+	public static final boolean[] EQU = BinUtils.toRawBools("0111");
+	public static final boolean[] DIFF = BinUtils.toRawBools("1000");
+	public static final boolean[] LOW = BinUtils.toRawBools("1001");
+	public static final boolean[] LOWEQ = BinUtils.toRawBools("1010");
+	public static final boolean[] GRE = BinUtils.toRawBools("1011");
+	public static final boolean[] GREEQ = BinUtils.toRawBools("1100");
+	public static final boolean[] LOAD = ADD;
+	public static final boolean[] STORE = ADD;
 
-	public static boolean isAluMode (BitStream mode) {
-		return mode.size() == 4 && BinaryUtils.toAbsInt(mode.toArray()) <= 14;
+	/*public static boolean isAluMode (boolean[] mode) {
+		return mode.size() == 4 && BinUtils.toAbsInt(mode.toArray()) <= 14;
 	}
 
-	/*private static final BitStream[][] modesOrder = new BitStream[][]{
+	private static final boolean[][][] modesOrder = BinUtils.toRawBools[][]{
 			{InstructionUtils.AND},
 			{InstructionUtils.OR},
 			{InstructionUtils.NOT},
@@ -42,11 +40,11 @@ public class ALUUtils {
 	};
 	// TODO: capire se serve -> private static int ALU_MODE_SIZE = 4;
 
-	public static BitStream getALUMode(BitStream instr) {
+	public static boolean[] getALUMode(boolean[] instr) {
 		for (int i = 0; i < modesOrder.length; i++) {
 			for (int j = 0; j < modesOrder[i].length; j++) {
 				if (BitsUtils.equals(instr, modesOrder[i][j])) {
-					return BinaryUtils.convertAbs(i, 4);
+					return BinUtils.convertAbs(i, 4);
 				}
 			}
 		}

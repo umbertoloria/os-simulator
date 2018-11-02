@@ -2,10 +2,19 @@ package com.umbertoloria.bittings;
 
 public class Bit {
 
+	public static int numNews[] = new int[100];
+	public static int instructions = 0;
+
 	private boolean val;
+
+	public Bit() {
+		this.val = false;
+		numNews[instructions]++;
+	}
 
 	public Bit(boolean val) {
 		this.val = val;
+		numNews[instructions]++;
 	}
 
 	public void set(boolean val) {
