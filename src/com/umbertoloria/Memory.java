@@ -8,24 +8,33 @@ import com.umbertoloria.utils.InstructionUtils;
 public class Memory {
 
 	private Bit[][] ram = new Bit[100][64];
-
-	private Bit[] addr;
+	private Bit[] in;
 	private Bit[] out = new Bit[InstructionUtils.MAX_INSTRUCTION_SIZE];
 
-	public void set(Bit[] addr) {
-		this.addr = addr;
+	Memory() {
+		Bit.WATCH("RAM");
+		for (int i = 0; i < ram.length; i++) {
+			for (int j = 0; j < ram[i].length; j++) {
+				ram[i][j] = new Bit();
+			}
+		}
+		Bit.eWATCH();
+	}
+
+	public void set(Bit[] in) {
+		this.in = in;
 	}
 
 	void clock() {
 		// Un giorno preleverò davvero dalla memoria istruzioni... :(
-		int index = BinUtils.toAbsInt(Bite.toBools(addr));
+		int index = BinUtils.toAbsInt(Bite.toBools(in));
 		System.arraycopy(ram[index], 0, out, 0, 64);
 		System.arraycopy(ram[index + 1], 0, out, 64, 64);
 		System.arraycopy(ram[index + 2], 0, out, 128, 64);
 	}
 
 	/**
-	 * Scrittura variabili da registri o costanti...
+	 Scrittura variabili da registri o costanti...
 	 */
 	void clockBack() {
 	}

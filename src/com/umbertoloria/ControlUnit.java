@@ -8,27 +8,35 @@ import com.umbertoloria.utils.InstructionUtils;
 public class ControlUnit {
 
 	private Bit[] instr;
-	private Bit readFlag1 = new Bit();
-	private Bit readFlag2 = new Bit();
-	private Bit writeFlag = new Bit();
-	private Bit aluSrc1 = new Bit();
-	private Bit aluSrc2 = new Bit();
+	private Bit readFlag1, readFlag2, writeFlag, aluSrc1, aluSrc2;
 	//private Bit memToReg = new Bit();
 	private Bit[] op1 = new Bit[64];
 	private Bit[] op2 = new Bit[64];
-	private Bit[] writeRegister = new Bit[3];
-	private Bit[] aluMode = new Bit[4];
+	private Bit[] writeRegister;
+	private Bit[] aluMode;
+
+	ControlUnit() {
+		Bit.WATCH("Control Unit");
+		readFlag1 = new Bit();
+		readFlag2 = new Bit();
+		writeFlag = new Bit();
+		aluSrc1 = new Bit();
+		aluSrc2 = new Bit();
+		writeRegister = Bite.initSet(3, false);
+		aluMode = Bite.initSet(4, false);
+		Bit.eWATCH();
+	}
 
 	/**
-	 * Sets the Instruction to execute.
-	 * @param instr is the instruction
+	 Sets the Instruction to execute.
+	 @param instr is the instruction
 	 */
 	public void set(Bit[] instr) {
 		this.instr = instr;
 	}
 
 	/**
-	 * Prepares all the flags and data that will pass through the Processor.
+	 Prepares all the flags and data that will pass through the Processor.
 	 */
 	public void clock() {
 
@@ -56,81 +64,81 @@ public class ControlUnit {
 
 		boolean[] tmpWriteRegister = iib.getRegister();
 		if (tmpWriteRegister != null) {
-			Bite.initSet(writeRegister, tmpWriteRegister);
+			Bite.set(writeRegister, tmpWriteRegister);
 		}
 		boolean[] tmpAluMode = iib.getAluMode();
 		if (tmpAluMode != null) {
-			Bite.initSet(aluMode, tmpAluMode);
+			Bite.set(aluMode, tmpAluMode);
 		}
 	}
 
 	/**
-	 * Gets the First Operator that transports Registers, Constants, Memory or Instruction Addresses.
-	 * @return the first operator
+	 Gets the First Operator that transports Registers, Constants, Memory or Instruction Addresses.
+	 @return the first operator
 	 */
 	Bit[] getOP1() {
 		return op1;
 	}
 
 	/**
-	 * Gets the Second Operator that transports Registers, Constants, Memory or Instruction Addresses.
-	 * @return the second operator
+	 Gets the Second Operator that transports Registers, Constants, Memory or Instruction Addresses.
+	 @return the second operator
 	 */
 	Bit[] getOP2() {
 		return op2;
 	}
 
 	/**
-	 * Gets the First Read Flag value that will be passed to the Register.
-	 * @return the first read flag
+	 Gets the First Read Flag value that will be passed to the Register.
+	 @return the first read flag
 	 */
 	Bit getReadFlag1() {
 		return readFlag1;
 	}
 
 	/**
-	 * Gets the Second Read Flag value that will be passed to the Register.
-	 * @return the second read flag
+	 Gets the Second Read Flag value that will be passed to the Register.
+	 @return the second read flag
 	 */
 	Bit getReadFlag2() {
 		return readFlag2;
 	}
 
 	/**
-	 * Gets the Write Flag value that will be passed to the Register.
-	 * @return the write flag
+	 Gets the Write Flag value that will be passed to the Register.
+	 @return the write flag
 	 */
 	Bit getWriteFlag() {
 		return writeFlag;
 	}
 
 	/**
-	 * Gets the Write Register Address that will be passed to the Register.
-	 * @return the write register address
+	 Gets the Write Register Address that will be passed to the Register.
+	 @return the write register address
 	 */
 	Bit[] getWriteRegister() {
 		return writeRegister;
 	}
 
 	/**
-	 * Gets the ALU-SRC Selector Bit of the First ALU-SRC MUX.
-	 * @return the first alu-src bit
+	 Gets the ALU-SRC Selector Bit of the First ALU-SRC MUX.
+	 @return the first alu-src bit
 	 */
 	Bit getALUSRC1() {
 		return aluSrc1;
 	}
 
 	/**
-	 * Gets the ALU-SRC Selector Bit of the Second ALU-SRC MUX.
-	 * @return the second alu-src bit
+	 Gets the ALU-SRC Selector Bit of the Second ALU-SRC MUX.
+	 @return the second alu-src bit
 	 */
 	Bit getALUSRC2() {
 		return aluSrc2;
 	}
 
 	/**
-	 * Gets the ALU-MODE that will be passed to the ALU.
-	 * @return the alu-mode
+	 Gets the ALU-MODE that will be passed to the ALU.
+	 @return the alu-mode
 	 */
 	Bit[] getALUMODE() {
 		return aluMode;

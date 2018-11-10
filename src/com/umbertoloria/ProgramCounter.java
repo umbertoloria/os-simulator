@@ -6,21 +6,28 @@ import com.umbertoloria.utils.BinUtils;
 
 public class ProgramCounter {
 
-	private Bit startExecution = new Bit(true);
-	private Bit[] addr = Bite.toBits("0000000000000000000000000000000000000000000000000000000000000000");
+	private Bit startExecution;
+	private Bit[] addr;
+	private Bit[] out;
 
-	private Bit[] out = addr;
+	ProgramCounter() {
+		Bit.WATCH("Program Counter");
+		startExecution = new Bit(true);
+		addr = Bite.toBits("0000000000000000000000000000000000000000000000000000000000000000");
+		Bit.eWATCH();
+		out = addr;
+	}
 
 	/**
-	 * Gets the Instruction Address to execute.
-	 * @return the instruction address
+	 Gets the Instruction Address to execute.
+	 @return the instruction address
 	 */
 	public Bit[] get() {
 		return out;
 	}
 
 	/**
-	 * After the execution of the insturction, it takes the next Instruction Address.
+	 After the execution of the insturction, it takes the next Instruction Address.
 	 */
 	public void clock() {
 		if (startExecution.get()) {

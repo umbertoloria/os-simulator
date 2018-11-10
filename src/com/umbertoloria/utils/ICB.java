@@ -35,8 +35,8 @@ public class ICB {
 	private static ICB DIFF2 = new ICB(BinUtils.toRawBools("011101"), 2, BinUtils.toRawBools("01110"), RegistersUtils.CR_C, ALUUtils.DIFF);
 	private static ICB DIFF3 = new ICB(BinUtils.toRawBools("011110"), 2, BinUtils.toRawBools("10101"), RegistersUtils.CR_C, ALUUtils.DIFF);
 	private static ICB DIFF4 = new ICB(BinUtils.toRawBools("011111"), 2, BinUtils.toRawBools("11100"), RegistersUtils.CR_C, ALUUtils.DIFF);
-	private static ICB LOW2 = new ICB(BinUtils.toRawBools("100001"), 2, BinUtils.toRawBools("01110"), RegistersUtils.CR_C, ALUUtils.LOW);
 	private static ICB LOW1 = new ICB(BinUtils.toRawBools("100000"), 2, BinUtils.toRawBools("00111"), RegistersUtils.CR_C, ALUUtils.LOW);
+	private static ICB LOW2 = new ICB(BinUtils.toRawBools("100001"), 2, BinUtils.toRawBools("01110"), RegistersUtils.CR_C, ALUUtils.LOW);
 	private static ICB LOW3 = new ICB(BinUtils.toRawBools("100010"), 2, BinUtils.toRawBools("10101"), RegistersUtils.CR_C, ALUUtils.LOW);
 	private static ICB LOW4 = new ICB(BinUtils.toRawBools("100011"), 2, BinUtils.toRawBools("11100"), RegistersUtils.CR_C, ALUUtils.LOW);
 	private static ICB LOWEQ1 = new ICB(BinUtils.toRawBools("100100"), 2, BinUtils.toRawBools("00111"), RegistersUtils.CR_C, ALUUtils.LOWEQ);

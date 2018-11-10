@@ -2,15 +2,13 @@ package com.umbertoloria.utils;
 
 public class BinUtils {
 
-	public static String toStr(boolean[] n) {
-		StringBuilder str = new StringBuilder();
-		for (boolean c : n) {
-			str.append(c ? '1' : '0');
-		}
-		return str.toString();
+	public static boolean[] convertAbs(int digit, int size) throws RuntimeException {
+		boolean[] res = new boolean[size];
+		System.arraycopy(convert(digit, size + 1), 1, res, 0, res.length);
+		return res;
 	}
 
-	public static boolean[] convert(int digit, int size) throws RuntimeException {
+	private static boolean[] convert(int digit, int size) throws RuntimeException {
 		boolean[] bits = new boolean[size];
 		if (digit < -Math.pow(2, size - 1) || digit > Math.pow(2, size - 1) - 1) {
 			throw new RuntimeException(digit + " non rappresentabile in " + size + " bit.");
@@ -37,21 +35,12 @@ public class BinUtils {
 		return bits;
 	}
 
-	public static boolean[] convertAbs(int digit, int size) throws RuntimeException { // TODO: test this
-		boolean[] app = convert(digit, size + 1);
-		boolean[] res = new boolean[app.length - 1];
-		for (int i = 0; i < res.length; i++) {
-			res[i] = app[i + 1];
+	static boolean[] toRawBools(String str) {
+		boolean[] bits = new boolean[str.length()];
+		for (int i = 0; i < bits.length; i++) {
+			bits[i] = str.charAt(i) == '1';
 		}
-		return res;
-	}
-
-	public static int toInt(boolean[] bits) {
-		int res = -(int) Math.pow(2, bits.length - 1) * (bits[0] ? 1 : 0);
-		for (int i = 1; i < bits.length; i++) {
-			res += (int) Math.pow(2, bits.length - 1 - i) * (bits[i] ? 1 : 0);
-		}
-		return res;
+		return bits;
 	}
 
 	public static int toAbsInt(boolean[] bits) {
@@ -62,12 +51,20 @@ public class BinUtils {
 		return res;
 	}
 
-	public static boolean[] toRawBools(String str) {
-		boolean[] bits = new boolean[str.length()];
-		for (int i = 0; i < bits.length; i++) {
-			bits[i] = str.charAt(i) == '1';
+	/*public static String toStr(boolean[] n) {
+		StringBuilder str = new StringBuilder();
+		for (boolean c : n) {
+			str.append(c ? '1' : '0');
 		}
-		return bits;
+		return str.toString();
+	}
+
+	public static int toInt(boolean[] bits) {
+		int res = -(int) Math.pow(2, bits.length - 1) * (bits[0] ? 1 : 0);
+		for (int i = 1; i < bits.length; i++) {
+			res += (int) Math.pow(2, bits.length - 1 - i) * (bits[i] ? 1 : 0);
+		}
+		return res;
 	}
 
 	public static boolean[] addZeros(String str, int size) {
@@ -80,7 +77,6 @@ public class BinUtils {
 		return bits;
 	}
 
-	/*
 	public static void add(boolean[] a, boolean[] b, boolean[] res) {
 		boolean carryIn = false;
 		for (int i = a.length - 1; i >= 0; i--) {

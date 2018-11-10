@@ -11,32 +11,38 @@ class ArithmeticLogicUnit {
 	private Bit[] mode;
 	private Bit[] a = new Bit[Computer.ARCH];
 	private Bit[] b = new Bit[Computer.ARCH];
-	private Bit[] result = new Bit[Computer.ARCH];
-	// Forse è l'ottavo registro? TODO: Non riferire a zero!
-	private Bit[] zero = Bite.toBits("0000000000000000000000000000000000000000000000000000000000000000");
-	private OR orGate = new OR(Computer.ARCH - 1);
+	private Bit[] result;
+	private Bit[] zero; // TODO: Forse è l'ottavo registro?
+	private OR orGate = new OR(Computer.ARCH);
 //	private ADDER[] adder = new ADDER[Computer.ARCH];
 //	private AND[] andGate = new AND[2];
 
+	ArithmeticLogicUnit() {
+		Bit.WATCH("Arithmetic-Logic Unit");
+		result = Bite.toBits("0000000000000000000000000000000000000000000000000000000000000000");
+		zero = Bite.toBits("0000000000000000000000000000000000000000000000000000000000000000");
+		Bit.eWATCH();
+	}
+
 	/**
-	 * Sets the Arithmetic-Logic Unit Mode.
-	 * @param mode will be the new alu-mode
+	 Sets the Arithmetic-Logic Unit Mode.
+	 @param mode will be the new alu-mode
 	 */
 	void setMode(Bit[] mode) {
 		this.mode = mode;
 	}
 
 	/**
-	 * Sets the First Operand of the Arithmetic-Logic Unit.
-	 * @param a will be the new first operand
+	 Sets the First Operand of the Arithmetic-Logic Unit.
+	 @param a will be the new first operand
 	 */
 	void setA(Bit[] a) {
 		this.a = a;
 	}
 
 	/**
-	 * Sets the Second Operand of the Arithmetic-Logic Unit.
-	 * @param b will be the new second operand
+	 Sets the Second Operand of the Arithmetic-Logic Unit.
+	 @param b will be the new second operand
 	 */
 	void setB(Bit[] b) {
 		/*if (b.length != Computer.ARCH) {
@@ -47,15 +53,15 @@ class ArithmeticLogicUnit {
 	}
 
 	/**
-	 * Gets the output of the Arithmetic-Logic Unit.
-	 * @return the result of the alu
+	 Gets the output of the Arithmetic-Logic Unit.
+	 @return the result of the alu
 	 */
 	Bit[] getResult() {
 		return result;
 	}
 
 	/**
-	 * Executes the operator defined by the ALU-Mode.
+	 Executes the operator defined by the ALU-Mode.
 	 */
 	void clock() {
 		if (Bite.equals(mode, ALUUtils.AND)) {
@@ -75,68 +81,73 @@ class ArithmeticLogicUnit {
 		}*/ else if (Bite.equals(mode, ALUUtils.EQU)) {
 			sub(a, b, result);
 			if (!thereAreAnyTrues(result, 0)) {
-				Bite.fillOf(result, result.length - 1, true);
+				// Situazione: nessun 1
+				result[result.length - 1].enable();
 			} else {
-				result = zero.clone();
+				Bite.set(result, zero);
 			}
-		} else if (Bite.equals(mode, ALUUtils.DIFF)) { // TODO: forse togliere l'istruzione diff o equ?
+		} else if (Bite.equals(mode, ALUUtils.DIFF)) {
 			sub(a, b, result);
-			// tutti i bit messi in or. se esce zero allora erano tutti zero
 			if (thereAreAnyTrues(result, 0)) {
-				result = zero.clone();
-				Bite.fillOf(result, result.length - 1, true);
+				// Situazione: almeno un 1
+				Bite.set(result, zero);
+				result[result.length - 1].set(true);
 			} else {
-				result = zero.clone();
+				Bite.set(result, zero);
 			}
 		} else if (Bite.equals(mode, ALUUtils.LOW)) {
 			sub(a, b, result);
 			if (result[0].get()) {
-				result = zero.clone();
-				Bite.fillOf(result, result.length - 1, true);
+				// Situazione: primo 1 e poi non importa
+				Bite.set(result, zero);
+				result[result.length - 1].set(true);
 			} else {
-				result = zero.clone();
+				Bite.set(result, zero);
 			}
 		} else if (Bite.equals(mode, ALUUtils.LOWEQ)) {
 			sub(a, b, result);
 			// S.C.E.: thereAreAnyTrues viene chiamata solo se result[0] = false
 			if (result[0].get() || !thereAreAnyTrues(result, 1)) {
-				result = zero.clone();
-				Bite.fillOf(result, result.length - 1, true);
+				// Situazione: primo 1 e poi non importa
+				//             tutti 0
+				Bite.set(result, zero);
+				result[result.length - 1].set(true);
 			} else {
-				result = zero.clone();
+				Bite.set(result, zero);
 			}
 		} else if (Bite.equals(mode, ALUUtils.GRE)) {
 			sub(a, b, result);
 			if (!result[0].get() && thereAreAnyTrues(result, 1)) {
-				result = zero.clone();
-				Bite.fillOf(result, result.length - 1, true);
+				// Situazione: Primo 0 e almeno un 1
+				Bite.set(result, zero);
+				result[result.length - 1].set(true);
 			} else {
-				result = zero.clone();
+				Bite.set(result, zero);
 			}
 		} else if (Bite.equals(mode, ALUUtils.GREEQ)) {
 			sub(a, b, result);
 			if (!result[0].get()) {
-				result = zero.clone();
-				Bite.fillOf(result, result.length - 1, true);
+				// Situazione: primo 0 e poi non importa
+				Bite.set(result, zero);
+				result[result.length - 1].set(true);
 			} else {
-				Bite.fillOf(result, result.length - 1, true);
+				Bite.set(result, zero);
 			}
 		}/* else if (Arrays.equals(mode, ALUUtils.LOAD)) {
 
 		} else if (Arrays.equals(mode, ALUUtils.STORE)) {
 
 		}*/ else {
-			throw new RuntimeException("Istruzione ArithmeticLogicUnit non capita." + mode);
+			throw new RuntimeException("Istruzione ArithmeticLogicUnit non capita.");
 		}
 	}
 
-	// FIXME: fare questo meglio!
 	private boolean thereAreAnyTrues(Bit[] in, int offset) {
-		for (int i = offset; i < in.length; i++) {
-			orGate.set(i - offset, in[i]);
-		}
-		for (int i = in.length - offset; i < orGate.size(); i++) {
+		for (int i = 0; i < offset; i++) {
 			orGate.set(i, new Bit());
+		}
+		for (int i = offset; i < in.length; i++) {
+			orGate.set(i, in[i]);
 		}
 		orGate.clock();
 		return orGate.get().get();
@@ -164,7 +175,7 @@ class ArithmeticLogicUnit {
 		boolean carryIn = false;
 		for (int i = a.length - 1; i >= 0; i--) {
 			boolean[] added = Circuits.adder(a[i].get(), b[i].get(), carryIn);
-			res[i] = new Bit(added[0]);
+			res[i].set(added[0]);
 			carryIn = added[1];
 		}
 	}

@@ -2,19 +2,50 @@ package com.umbertoloria.bittings;
 
 public class Bit {
 
-	public static int numNews[] = new int[100];
-	public static int instructions = 0;
+	private static int[] numNews = new int[100];
+	private static String[] scopeNames = new String[100];
+	private static int instructions = 0;
+	private static boolean watching = false;
+	private static boolean output = false;
+
+	private static void newBit() {
+		numNews[instructions]++;
+		if (output) {
+			System.out.println("new Bit");
+		}
+	}
+
+	public static void WATCH(String name) {
+		if (instructions == 0 || watching) {
+			if (instructions == 0) {
+				scopeNames[instructions] = "Init";
+			}
+			eWATCH();
+		}
+		scopeNames[instructions] = name;
+		watching = true;
+	}
+
+	public static void eWATCH() {
+		watching = false;
+		System.err.printf("%4d bits created on [ %-33s ]\n", numNews[instructions], scopeNames[instructions]);
+		instructions++;
+	}
+
+	public static void enableOutput () {
+		output = true;
+	}
 
 	private boolean val;
 
 	public Bit() {
 		this.val = false;
-		numNews[instructions]++;
+		newBit();
 	}
 
 	public Bit(boolean val) {
 		this.val = val;
-		numNews[instructions]++;
+		newBit();
 	}
 
 	public void set(boolean val) {

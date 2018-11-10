@@ -9,15 +9,18 @@ public class OR {
 
 	public OR(int size) {
 		in = new Bit[size];
+		Bit.WATCH("OR");
+		out = new Bit();
+		Bit.eWATCH();
 	}
 
 	public void set(int index, Bit val) {
 		in[index] = val;
 	}
 
-	public int size() {
+	/*public int size() {
 		return in.length;
-	}
+	}*/
 
 	public void clock() {
 		for (Bit b : in) {

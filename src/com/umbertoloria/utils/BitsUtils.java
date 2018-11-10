@@ -14,7 +14,7 @@ public class BitsUtils {
 		}
 	}
 
-	public static void setEnd(boolean[] set, boolean[] save) {
+	/*public static void setEnd(boolean[] set, boolean[] save) {
 		if (save.length <= set.length) {
 			System.arraycopy(save, 0, set, set.length - save.length, save.length);
 			// TODO: VEDERE SE MI SERVE VERAMENTE!
@@ -39,7 +39,7 @@ public class BitsUtils {
 		System.arraycopy(x, 0, stream, offset, x.length);
 		/*for (int i = 0; i < x.length; i++) {
 			stream[offset + i] = x[i];
-		}*/
+		}*
 		return offset + x.length;
 	}
 
@@ -49,7 +49,7 @@ public class BitsUtils {
 		System.arraycopy(x, 0, res, 0, length);
 		/*for (int i = 0; i < length; i++) {
 			res[i] = x[i];
-		}*/
+		}*
 		return res;
 	}
 
@@ -58,7 +58,7 @@ public class BitsUtils {
 		System.arraycopy(x, start, res, 0, res.length);
 		/*for (int i = 0; i < length; i++) {
 			res[i] = x[i];
-		}*/
+		}
 		return res;
 	}
 
@@ -90,9 +90,9 @@ public class BitsUtils {
 			}
 		}
 		return i >= check.length;
-	}
+	}*/
 
-	public static boolean equals(boolean[] a, boolean[] b) {
+	static boolean equals(boolean[] a, boolean[] b) {
 		if (a.length != b.length) {
 			return false;
 		}
@@ -104,11 +104,11 @@ public class BitsUtils {
 		return true;
 	}
 
-	public static void print(boolean[] x) {
+	/*public static void print(boolean[] x) {
 		for (boolean b : x) {
 			System.out.print(b ? '1' : '0');
 		}
 		System.out.println();
-	}
+	}*/
 
 }

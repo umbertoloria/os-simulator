@@ -11,12 +11,12 @@ public class Bite {
 		}
 	}
 
-	public static void initSet(Bit[] dest, boolean[] save) {
+	public static void set(Bit[] dest, Bit[] save) {
 		if (dest.length != save.length) {
 			throw new RuntimeException("Different sizes...");
 		}
 		for (int i = 0; i < dest.length; i++) {
-			dest[i] = new Bit(save[i]);
+			dest[i].set(save[i].get());
 		}
 	}
 
@@ -33,14 +33,6 @@ public class Bite {
 			throw new RuntimeException("Left array smaller than right array");
 		}
 		System.arraycopy(link, 0, dest, 0, link.length);
-	}
-
-	public static void linkStupid(Bit[] dest, Bit[] link) {
-		if (dest.length < link.length) {
-			System.arraycopy(link, 0, dest, 0, dest.length);
-		} else {
-			System.arraycopy(link, 0, dest, 0, link.length);
-		}
 	}
 
 	public static void linkSub(Bit[] dest, Bit[] bits, int from, int to) {
@@ -64,28 +56,12 @@ public class Bite {
 		return to;
 	}
 
-	public static Bit[] toBits(boolean[] from) {
-		Bit[] to = new Bit[from.length];
-		for (int i = 0; i < to.length; i++) {
-			to[i] = new Bit(from[i]);
-		}
-		return to;
-	}
-
 	public static Bit[] toBits(String str) {
 		Bit[] bits = new Bit[str.length()];
 		for (int i = 0; i < str.length(); i++) {
 			bits[i] = new Bit(str.charAt(i) == '1');
 		}
 		return bits;
-	}
-
-	public static String str(Bit[] bits) {
-		StringBuilder res = new StringBuilder();
-		for (Bit bit : bits) {
-			res.append(bit.get() ? '1' : '0');
-		}
-		return res.toString();
 	}
 
 	public static boolean equals(Bit[] a, boolean[] b) {
@@ -109,12 +85,6 @@ public class Bite {
 			}
 		}
 		return i >= check.length;
-	}
-
-	public static void fillOf(Bit[] from, int to, boolean val) {
-		for (int i = 0; i < to; i++) {
-			from[i].set(val);
-		}
 	}
 
 }

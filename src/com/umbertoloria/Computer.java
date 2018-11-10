@@ -8,7 +8,7 @@ import com.umbertoloria.utils.RegistersUtils;
 public class Computer {
 
 	public static final int ARCH = 64;
-	private boolean[] instr; // = new boolean[InstructionUtils.MAX_INSTRUCTION_SIZE];
+	// private boolean[] instr = new boolean[InstructionUtils.MAX_INSTRUCTION_SIZE];
 
 	private ProgramCounter programCounter = new ProgramCounter();
 	private Memory memory = new Memory();
@@ -17,12 +17,11 @@ public class Computer {
 	private MUX aluSrc1Mux = new MUX();
 	private MUX aluSrc2Mux = new MUX();
 	private ArithmeticLogicUnit arithmeticLogicUnit = new ArithmeticLogicUnit();
-	// TODO: Implement a Control Unit!
 
 	void newInstr(String instr, int index) {
 		StringBuilder extendedInstr = new StringBuilder();
 		extendedInstr.append(instr);
-		while (extendedInstr.length() <= 64 * 3) {
+		while (extendedInstr.length() < 64 * 3) {
 			extendedInstr.append("0");
 		}
 		memory.addInstr(Bite.toBits(extendedInstr.toString()), index * 3);
@@ -72,7 +71,6 @@ public class Computer {
 		Bit[] OPERATOR2 = controlUnit.getOP2();
 		Bit[] WRITEREGISTER = controlUnit.getWriteRegister();
 		Bit[] ALUMODE = controlUnit.getALUMODE();
-//		TODO: MEMTOREG?
 		// Read REGs
 		regs.setReadFlag1(READFLAG1);
 		regs.setReadFlag2(READFLAG2);
@@ -109,7 +107,6 @@ public class Computer {
 		arithmeticLogicUnit.clock();
 		// memory
 		regs.clockBack();
-		Bit.instructions++;
 	}
 
 }

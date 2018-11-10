@@ -7,42 +7,67 @@ public class Main {
 	public static void main(String[] args) {
 
 		String instrCode, op1, op2;
+
 		Computer pc = new Computer();
 
 		// add 3 4
 		instrCode = "001101";
 		op1 = "0000000000000000000000000000000000000000000000000000000000000011";
 		op2 = "0000000000000000000000000000000000000000000000000000000000000100";
+
+		Bit.WATCH("Inserimento Prima Instruzione");
 		pc.newInstr(instrCode + op1 + op2, 0);
+
+		Bit.WATCH("Primo CLOCK");
+		pc.clock();
 
 		// add AR 1
 		instrCode = "001111";
 		op1 = "0000000000000000000000000000000000000000000000000000000000000000";
 		op2 = "0000000000000000000000000000000000000000000000000000000000000001";
+
+		Bit.WATCH("Inserimento Seconda Instruzione");
 		pc.newInstr(instrCode + op1 + op2, 1);
+
+		Bit.WATCH("Secondo CLOCK");
+		pc.clock();
 
 		// sub AR 1
 		instrCode = "010011";
 		op1 = "0000000000000000000000000000000000000000000000000000000000000000";
 		op2 = "0000000000000000000000000000000000000000000000000000000000000001";
+
+		Bit.WATCH("Inserimento Terza Instruzione");
 		pc.newInstr(instrCode + op1 + op2, 2);
 
-		// add 1101 AR
+		Bit.WATCH("Terzo CLOCK");
+		pc.clock();
+
+		// add 3 AR
 		instrCode = "001110";
-		op1 = "0000000000000000000000000000000000000000000000000000000000001101";
+		op1 = "0000000000000000000000000000000000000000000000000000000000000011";
 		op2 = "0000000000000000000000000000000000000000000000000000000000000000";
+
+		Bit.WATCH("Inserimento Quarta Instruzione");
 		pc.newInstr(instrCode + op1 + op2, 3);
 
-		pc.clock();
-		pc.clock();
-		pc.clock();
+		Bit.WATCH("Quarto CLOCK");
 		pc.clock();
 
-		System.out.println("Bit creati per numero istruzione:");
-		for (int i = 0; i < Bit.instructions; i++) {
-			System.out.println(i + ": " + Bit.numNews[i]);
-		}
+/*
+		// greeq 4 4
+		instrCode = "101100";
+		op1 = "0000000000000000000000000000000000000000000000000000000000000100";
+		op2 = "0000000000000000000000000000000000000000000000000000000000000100";
 
+		Bit.WATCH("Inserimento Prima Instruzione");
+		pc.newInstr(instrCode + op1 + op2, 0);
+
+		Bit.WATCH("Primo CLOCK");
+		pc.clock();
+*/
+		Bit.eWATCH();
+		// Bit.enableOutput();
 		pc.registerStatus(false);
 
 	}
