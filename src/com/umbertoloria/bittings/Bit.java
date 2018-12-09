@@ -1,38 +1,60 @@
 package com.umbertoloria.bittings;
 
+import com.umbertoloria.BitGroup;
+
+import java.util.ArrayList;
+
 public class Bit {
 
-	private static int[] numNews = new int[100];
-	private static String[] scopeNames = new String[100];
+	public static ArrayList<BitGroup> groups = new ArrayList<>();
+	//private static LinkedList<String> scopeNames = new LinkedList<>();
 	private static int instructions = 0;
 	private static boolean watching = false;
 	private static boolean output = false;
 
-	private static void newBit() {
-		numNews[instructions]++;
+	private static void newBit(Bit bit) {
+		/*numNews[instructions]++;
+		Main.w.newBit(bit, instructions);
 		if (output) {
 			System.out.println("new Bit");
+		}*/
+		/*numNews.get(instructions).add(bit);
+		//Main.w.newBit(bit, instructions);
+		if (output) {
+			System.out.println("new Bit");
+		}*/
+		if (watching) {
+			groups.get(groups.size() - 1).add(bit);
 		}
 	}
 
 	public static void WATCH(String name) {
-		if (instructions == 0 || watching) {
+		/*if (instructions == 0 || watching) {
 			if (instructions == 0) {
-				scopeNames[instructions] = "Init";
+				//scopeNames[instructions] = "Init";
+				if (instructions < scopeNames.size()) {
+					scopeNames.set(instructions, "Init");
+				} else {
+					scopeNames.add(instructions, "Init");
+				}
 			}
 			eWATCH();
 		}
-		scopeNames[instructions] = name;
+		//scopeNames[instructions] = name;
+		//scopeNames.set(instructions, name);*/
 		watching = true;
+		groups.add(new BitGroup(name));
 	}
 
 	public static void eWATCH() {
 		watching = false;
-		System.err.printf("%4d bits created on [ %-33s ]\n", numNews[instructions], scopeNames[instructions]);
-		instructions++;
+		//System.err.printf("%4d bits created on [ %-33s ]\n", numNews[instructions], scopeNames[instructions]);
+/*		System.err.printf("%4d bits created on [ %-33s ]\n", numNews.get(instructions).size(),
+				scopeNames.get(instructions));*/
+		//instructions++;
 	}
 
-	public static void enableOutput () {
+	public static void enableOutput() {
 		output = true;
 	}
 
@@ -40,12 +62,12 @@ public class Bit {
 
 	public Bit() {
 		this.val = false;
-		newBit();
+		newBit(this);
 	}
 
 	public Bit(boolean val) {
 		this.val = val;
-		newBit();
+		newBit(this);
 	}
 
 	public void set(boolean val) {

@@ -2,10 +2,13 @@ package com.umbertoloria;
 
 import com.umbertoloria.bittings.Bit;
 import com.umbertoloria.bittings.Bite;
+import com.umbertoloria.interfaces.Clockable;
 import com.umbertoloria.utils.ICB;
 import com.umbertoloria.utils.InstructionUtils;
 
-public class ControlUnit {
+import java.awt.*;
+
+public class ControlUnit implements Clockable {
 
 	private Bit[] instr;
 	private Bit readFlag1, readFlag2, writeFlag, aluSrc1, aluSrc2;
@@ -40,21 +43,23 @@ public class ControlUnit {
 	 */
 	public void clock() {
 
+		// Prelevo informazioni dai bit iniziali dell'istruzione
 		ICB iib = InstructionUtils.getICB(Bite.toBools(Bite.truncate(instr, InstructionUtils.INSTR_CODE_SIZE)));
 
+		// Scarico gli operandi dall'istruzione
 		int operandsCount = iib.getOperandsCount();
-
 		if (operandsCount == 2) {
 			Bite.linkSub(op1, instr, 6, 6 + 64);
 			Bite.linkSub(op2, instr, 6 + 64, 6 + 64 + 64);
 		} else if (operandsCount == 1) {
 			Bite.linkSub(op1, instr, 6, 6 + 64);
 		} else if (operandsCount == 0) {
-
+			// Non ho ancora implementato un'istruzione senza operandi...
 		} else {
 			throw new RuntimeException("Qualcosa è sfuggita.");
 		}
 
+		// Configurazione dei flags
 		boolean[] instr_flags = iib.getFlags();
 		readFlag1.set(instr_flags[0]);
 		readFlag2.set(instr_flags[1]);
@@ -62,10 +67,13 @@ public class ControlUnit {
 		aluSrc1.set(instr_flags[3]);
 		aluSrc2.set(instr_flags[4]);
 
+		// Registri di scrittura (opzionale)
 		boolean[] tmpWriteRegister = iib.getRegister();
 		if (tmpWriteRegister != null) {
 			Bite.set(writeRegister, tmpWriteRegister);
 		}
+
+		// AluMode (opzionale)
 		boolean[] tmpAluMode = iib.getAluMode();
 		if (tmpAluMode != null) {
 			Bite.set(aluMode, tmpAluMode);
@@ -144,4 +152,43 @@ public class ControlUnit {
 		return aluMode;
 	}
 
+	void draw(Renderer r, boolean lastClocked) {
+		if (lastClocked) {
+			r.box(0, 0, 780, 130, Color.darkGray, true);
+		}
+		r.box(0, 0, 780, 130, Color.green, false);
+		r.write("Control Unit", 10, 10, Color.gray);
+		r.write("Instruction", 10, 30, Color.gray);
+		r.drawInstr(instr, 130, 30);
+
+		r.write("Operator 1", 10, 50, Color.gray);
+		r.drawBits(op1, 130, 50);
+		r.write("Operator 2", 10, 70, Color.gray);
+		r.drawBits(op2, 130, 70);
+
+		r.write("Read Flag 1", 10, 90, Color.gray);
+		r.drawBit(readFlag1, 90, 90);
+		r.write("Read Flag 2", 120, 90, Color.gray);
+		r.drawBit(readFlag2, 200, 90);
+		r.write("Write Register", 230, 90, Color.gray);
+		r.drawBits(writeRegister, 320, 90);
+		r.write("Write Flag", 390, 90, Color.gray);
+		r.drawBit(writeFlag, 460, 90);
+
+		r.write("ALU Src 1", 10, 110, Color.gray);
+		r.drawBit(aluSrc1, 90, 110);
+		r.write("ALU Src 2", 120, 110, Color.gray);
+		r.drawBit(aluSrc2, 200, 110);
+		r.write("ALU Mode", 230, 110, Color.gray);
+		r.drawBits(aluMode, 320, 110);
+
+		/*for (int i = 0; i < ram.length; i++) {
+			r.write("Box #" + (i + 1), 10, 30 + i * 20, Color.gray);
+			r.drawBits(ram[i], 130, 30 + i * 20);
+		}
+		r.write("In", 10, 30 + ram.length * 20 + 10, Color.gray);
+		r.drawBits(in, 130, 30 + ram.length * 20 + 10);
+		r.write("Out", 10, 30 + ram.length * 20 + 40, Color.gray);
+		r.drawBits(out, 130, 30 + ram.length * 20 + 40);*/
+	}
 }

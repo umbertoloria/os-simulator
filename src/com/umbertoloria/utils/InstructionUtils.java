@@ -13,7 +13,7 @@ public class InstructionUtils {
 				}
 			}
 		}
-		return null;
+		throw new RuntimeException("ICB not found");
 	}
 
 }

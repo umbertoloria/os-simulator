@@ -1,7 +1,5 @@
 package com.umbertoloria;
 
-import com.umbertoloria.bittings.Bit;
-
 public class Main {
 
 	public static void main(String[] args) {
@@ -10,18 +8,20 @@ public class Main {
 
 		Computer pc = new Computer();
 
+		new Watcher(pc);
+
 		// add 3 4
 		instrCode = "001101";
 		op1 = "0000000000000000000000000000000000000000000000000000000000000011";
 		op2 = "0000000000000000000000000000000000000000000000000000000000000100";
 
-		Bit.WATCH("Inserimento Prima Instruzione");
+//		Bit.WATCH("Inserimento Prima Instruzione");
 		pc.newInstr(instrCode + op1 + op2, 0);
 
-		Bit.WATCH("Primo CLOCK");
+//		Bit.WATCH("Primo CLOCK");
 		pc.clock();
 
-		// add AR 1
+/*		// add AR 1
 		instrCode = "001111";
 		op1 = "0000000000000000000000000000000000000000000000000000000000000000";
 		op2 = "0000000000000000000000000000000000000000000000000000000000000001";
@@ -53,7 +53,7 @@ public class Main {
 
 		Bit.WATCH("Quarto CLOCK");
 		pc.clock();
-
+*/
 /*
 		// greeq 4 4
 		instrCode = "101100";
@@ -66,9 +66,9 @@ public class Main {
 		Bit.WATCH("Primo CLOCK");
 		pc.clock();
 */
-		Bit.eWATCH();
+//		Bit.eWATCH();
 		// Bit.enableOutput();
-		pc.registerStatus(false);
+//		pc.registerStatus(false);
 
 	}
 

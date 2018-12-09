@@ -3,10 +3,13 @@ package com.umbertoloria;
 import com.umbertoloria.bittings.Bit;
 import com.umbertoloria.bittings.Bite;
 import com.umbertoloria.integrates.OR;
+import com.umbertoloria.interfaces.Clockable;
 import com.umbertoloria.utils.ALUUtils;
 import com.umbertoloria.utils.Circuits;
 
-class ArithmeticLogicUnit {
+import java.awt.*;
+
+class ArithmeticLogicUnit implements Clockable {
 
 	private Bit[] mode;
 	private Bit[] a = new Bit[Computer.ARCH];
@@ -63,7 +66,7 @@ class ArithmeticLogicUnit {
 	/**
 	 Executes the operator defined by the ALU-Mode.
 	 */
-	void clock() {
+	public void clock() {
 		if (Bite.equals(mode, ALUUtils.AND)) {
 			and(a, b, result);
 		} else if (Bite.equals(mode, ALUUtils.OR)) {
@@ -189,4 +192,19 @@ class ArithmeticLogicUnit {
 		}
 	}
 
+	void draw(Renderer r, boolean lastClocked) {
+		if (lastClocked) {
+			r.box(0, 0, 780, 110, Color.darkGray, true);
+		}
+		r.box(0, 0, 780, 110, Color.blue, false);
+		r.write("Arithmetic-Logic Unit", 10, 10, Color.gray);
+		r.write("ALU Mode", 10, 30, Color.gray);
+		r.drawBits(mode, 130, 30);
+		r.write("A", 10, 50, Color.gray);
+		r.drawBits(a, 130, 50);
+		r.write("B", 10, 70, Color.gray);
+		r.drawBits(b, 130, 70);
+		r.write("Result", 10, 90, Color.gray);
+		r.drawBits(result, 130, 90);
+	}
 }

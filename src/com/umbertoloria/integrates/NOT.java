@@ -1,8 +1,9 @@
 package com.umbertoloria.integrates;
 
 import com.umbertoloria.bittings.Bit;
+import com.umbertoloria.interfaces.Clockable;
 
-public class NOT {
+public class NOT implements Clockable {
 
 	private Bit in, out;
 

@@ -1,8 +1,9 @@
 package com.umbertoloria.integrates;
 
 import com.umbertoloria.bittings.Bit;
+import com.umbertoloria.interfaces.Clockable;
 
-public class OR {
+public class OR implements Clockable {
 
 	private Bit[] in;
 	private Bit out;

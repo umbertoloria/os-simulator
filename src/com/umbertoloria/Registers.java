@@ -2,9 +2,12 @@ package com.umbertoloria;
 
 import com.umbertoloria.bittings.Bit;
 import com.umbertoloria.bittings.Bite;
+import com.umbertoloria.interfaces.Clockable;
 import com.umbertoloria.utils.RegistersUtils;
 
-class Registers {
+import java.awt.*;
+
+class Registers implements Clockable {
 
 	private Bit[] AR, LR, MR, CR, OR1, OR2;
 	private Bit readFlag1, readFlag2, writeFlag;
@@ -58,7 +61,7 @@ class Registers {
 	/**
 	 Checks the Read Flags and sets the data from the Read Registers on the Read Data.
 	 */
-	void clock() {
+	public void clock() {
 		if (readFlag1.get()) {
 			Bite.linkLeft(readData1, getRegisterData(readReg1));
 		}
@@ -112,7 +115,7 @@ class Registers {
 	/**
 	 Checks the Write Flag and writes the content of the Write Data in the Write Register.
 	 */
-	void clockBack() {
+	public void clockBack() {
 		if (writeFlag.get()) {
 			Bite.linkLeft(getRegisterData(writeReg), writeData);
 		}
@@ -180,4 +183,35 @@ class Registers {
 		return sb.toString();
 	}
 
+	void draw(Renderer r, boolean lastClocked) {
+		if (lastClocked) {
+			r.box(0, 0, 780, 180, Color.darkGray, true);
+		}
+		r.box(0, 0, 780, 180, Color.magenta, false);
+		r.write("Registers", 10, 10, Color.gray);
+		r.write("Arithmetic Register", 10, 30, Color.gray);
+		r.drawBits(AR, 130, 30);
+		r.write("Logical Register", 10, 40, Color.gray);
+		r.drawBits(LR, 130, 40);
+		r.write("Memory Register", 10, 50, Color.gray);
+		r.drawBits(MR, 130, 50);
+		r.write("Condition Register", 10, 60, Color.gray);
+		r.drawBits(CR, 130, 60);
+		r.write("Other Register 1", 10, 70, Color.gray);
+		r.drawBits(OR1, 130, 70);
+		r.write("Other Register 2", 10, 80, Color.gray);
+		r.drawBits(OR2, 130, 80);
+
+		r.write("Read Register 1", 10, 100, Color.gray);
+		r.drawBits(readReg1, 130, 100);
+
+		r.write("Read Register 2", 10, 120, Color.gray);
+		r.drawBits(readReg2, 130, 120);
+
+		r.write("Write Data", 10, 140, Color.gray);
+		r.drawBits(writeData, 130, 140);
+
+		r.write("Write Register", 10, 160, Color.gray);
+		r.drawBits(writeReg, 130, 160);
+	}
 }
