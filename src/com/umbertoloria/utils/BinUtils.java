@@ -8,10 +8,10 @@ public class BinUtils {
 		return res;
 	}
 
-	private static boolean[] convert(int digit, int size) throws RuntimeException {
+	public static boolean[] convert(int digit, int size) throws RuntimeException {
 		boolean[] bits = new boolean[size];
 		if (digit < -Math.pow(2, size - 1) || digit > Math.pow(2, size - 1) - 1) {
-			throw new RuntimeException(digit + " non rappresentabile in " + size + " bit.");
+			throw new RuntimeException(digit + " non rappresentabile in " + size + " bit");
 		}
 		boolean complemento = digit < 0;
 		if (complemento) {
@@ -51,58 +51,12 @@ public class BinUtils {
 		return res;
 	}
 
-	/*public static String toStr(boolean[] n) {
-		StringBuilder str = new StringBuilder();
-		for (boolean c : n) {
-			str.append(c ? '1' : '0');
+	public static String toStr(boolean[] from) {
+		StringBuilder sb = new StringBuilder();
+		for (boolean b : from) {
+			sb.append(b ? '1' : '0');
 		}
-		return str.toString();
+		return sb.toString();
 	}
-
-	public static int toInt(boolean[] bits) {
-		int res = -(int) Math.pow(2, bits.length - 1) * (bits[0] ? 1 : 0);
-		for (int i = 1; i < bits.length; i++) {
-			res += (int) Math.pow(2, bits.length - 1 - i) * (bits[i] ? 1 : 0);
-		}
-		return res;
-	}
-
-	public static boolean[] addZeros(String str, int size) {
-		boolean[] bits = new boolean[size];
-		boolean[] toadd = toRawBools(str);
-		int offset = size - toadd.length;
-		for (int i = 0; i < toadd.length; i++) {
-			bits[offset + i] = toadd[i];
-		}
-		return bits;
-	}
-
-	public static void add(boolean[] a, boolean[] b, boolean[] res) {
-		boolean carryIn = false;
-		for (int i = a.length - 1; i >= 0; i--) {
-			boolean[] added = ALUUtils.adder(a[i], b[i], carryIn);
-			res[i] = added[0];
-			carryIn = added[1];
-		}
-	}
-
-	public static void and(boolean[] a, boolean[] b, boolean[] res) {
-		for (int i = 0; i < a.length; i++) {
-			res[i] = ALUUtils.and(a[i], b[i]);
-		}
-	}
-
-	public static void or(boolean[] a, boolean[] b, boolean[] res) {
-		for (int i = 0; i < a.length; i++) {
-			res[i] = ALUUtils.or(a[i], b[i]);
-		}
-	}
-
-	public static boolean not(boolean[] a, boolean[] res) {
-		for (int i = 0; i < a.length; i++) {
-			res[i] = ArithmeticLogicUnit.not(a[i]);
-		}
-		return true;
-	}*/
 
 }

@@ -1,6 +1,6 @@
 package com.umbertoloria.integrates;
 
-import com.umbertoloria.bittings.Bit;
+import com.umbertoloria.bitting.Bit;
 import com.umbertoloria.interfaces.Clockable;
 
 public class OR implements Clockable {
@@ -10,9 +10,7 @@ public class OR implements Clockable {
 
 	public OR(int size) {
 		in = new Bit[size];
-		Bit.WATCH("OR");
 		out = new Bit();
-		Bit.eWATCH();
 	}
 
 	public void set(int index, Bit val) {

@@ -1,7 +1,7 @@
-package com.umbertoloria;
+package com.umbertoloria.components;
 
-import com.umbertoloria.bittings.Bit;
-import com.umbertoloria.bittings.Bite;
+import com.umbertoloria.bitting.*;
+import com.umbertoloria.graphics.Renderer;
 import com.umbertoloria.interfaces.Clockable;
 import com.umbertoloria.utils.RegistersUtils;
 
@@ -14,16 +14,16 @@ class Registers implements Clockable {
 	private Bit[] readReg1, readReg2, writeReg, writeData;
 	private Bit[] readData1 = new Bit[64];
 	private Bit[] readData2 = new Bit[64];
+	private Bit[] zero;
 
 	Registers() {
-		Bit.WATCH("Registri");
-		AR = Bite.initSet(Computer.ARCH, false);
-		LR = Bite.initSet(Computer.ARCH, false);
-		MR = Bite.initSet(Computer.ARCH, false);
-		CR = Bite.initSet(Computer.ARCH, false);
-		OR1 = Bite.initSet(Computer.ARCH, false);
-		OR2 = Bite.initSet(Computer.ARCH, false);
-		Bit.eWATCH();
+		AR = BitAlloc.create(Computer.ARCH, false);
+		LR = BitAlloc.create(Computer.ARCH, false);
+		MR = BitAlloc.create(Computer.ARCH, false);
+		CR = BitAlloc.create(Computer.ARCH, false);
+		OR1 = BitAlloc.create(Computer.ARCH, false);
+		OR2 = BitAlloc.create(Computer.ARCH, false);
+		zero = BitAlloc.create("0000000000000000000000000000000000000000000000000000000000000000");
 	}
 
 	/**
@@ -63,10 +63,14 @@ class Registers implements Clockable {
 	 */
 	public void clock() {
 		if (readFlag1.get()) {
-			Bite.linkLeft(readData1, getRegisterData(readReg1));
+			BitLink.link(readData1, getRegisterData(readReg1));
+		} else {
+			BitLink.link(readData1, zero);
 		}
 		if (readFlag2.get()) {
-			Bite.linkLeft(readData2, getRegisterData(readReg2));
+			BitLink.link(readData2, getRegisterData(readReg2));
+		} else {
+			BitLink.link(readData2, zero);
 		}
 	}
 
@@ -117,39 +121,39 @@ class Registers implements Clockable {
 	 */
 	public void clockBack() {
 		if (writeFlag.get()) {
-			Bite.linkLeft(getRegisterData(writeReg), writeData);
+			BitUse.set(getRegisterData(writeReg), writeData);
 		}
 	}
 
 	private Bit[] getRegisterData(Bit[] reg) {
-		if (Bite.endsWith(reg, RegistersUtils.AR_C)) {
+		if (BitCheck.endsWith(reg, RegistersUtils.AR)) {
 			return AR;
-		} else if (Bite.endsWith(reg, RegistersUtils.LR_C)) {
+		} else if (BitCheck.endsWith(reg, RegistersUtils.LR)) {
 			return LR;
-		} else if (Bite.endsWith(reg, RegistersUtils.MR_C)) {
+		} else if (BitCheck.endsWith(reg, RegistersUtils.MR)) {
 			return MR;
-		} else if (Bite.endsWith(reg, RegistersUtils.CR_C)) {
+		} else if (BitCheck.endsWith(reg, RegistersUtils.CR)) {
 			return CR;
-		} else if (Bite.endsWith(reg, RegistersUtils.OR1_C)) {
+		} else if (BitCheck.endsWith(reg, RegistersUtils.OR1)) {
 			return OR1;
-		} else if (Bite.endsWith(reg, RegistersUtils.OR2_C)) {
+		} else if (BitCheck.endsWith(reg, RegistersUtils.OR2)) {
 			return OR2;
 		}
 		throw new RuntimeException("Abbiamo un non-registro in writeReg");
 	}
 
 	private Bit[] getRegisterData(boolean[] reg) {
-		if (reg == RegistersUtils.AR_C) {
+		if (reg == RegistersUtils.AR) {
 			return AR;
-		} else if (reg == RegistersUtils.LR_C) {
+		} else if (reg == RegistersUtils.LR) {
 			return LR;
-		} else if (reg == RegistersUtils.MR_C) {
+		} else if (reg == RegistersUtils.MR) {
 			return MR;
-		} else if (reg == RegistersUtils.CR_C) {
+		} else if (reg == RegistersUtils.CR) {
 			return CR;
-		} else if (reg == RegistersUtils.OR1_C) {
+		} else if (reg == RegistersUtils.OR1) {
 			return OR1;
-		} else if (reg == RegistersUtils.OR2_C) {
+		} else if (reg == RegistersUtils.OR2) {
 			return OR2;
 		}
 		throw new RuntimeException("Abbiamo un non-registro in writeReg");
@@ -185,33 +189,33 @@ class Registers implements Clockable {
 
 	void draw(Renderer r, boolean lastClocked) {
 		if (lastClocked) {
-			r.box(0, 0, 780, 180, Color.darkGray, true);
+			r.box(0, 0, 652, 100, Color.darkGray, true);
 		}
-		r.box(0, 0, 780, 180, Color.magenta, false);
-		r.write("Registers", 10, 10, Color.gray);
-		r.write("Arithmetic Register", 10, 30, Color.gray);
-		r.drawBits(AR, 130, 30);
-		r.write("Logical Register", 10, 40, Color.gray);
-		r.drawBits(LR, 130, 40);
-		r.write("Memory Register", 10, 50, Color.gray);
-		r.drawBits(MR, 130, 50);
-		r.write("Condition Register", 10, 60, Color.gray);
-		r.drawBits(CR, 130, 60);
-		r.write("Other Register 1", 10, 70, Color.gray);
-		r.drawBits(OR1, 130, 70);
-		r.write("Other Register 2", 10, 80, Color.gray);
-		r.drawBits(OR2, 130, 80);
+		r.box(0, 0, 652, 100, Color.magenta, false);
+		int x = Renderer.bs;
+		int oy = 10 - x;
+		r.write("Arithmetic Register", 10, (oy += x));
+		r.drawBits(AR, 130, oy);
+		r.write("Logical Register", 10, (oy += x));
+		r.drawBits(LR, 130, oy);
+		r.write("Memory Register", 10, (oy += x));
+		r.drawBits(MR, 130, oy);
+		r.write("Condition Register", 10, (oy += x));
+		r.drawBits(CR, 130, oy);
+		r.write("Other Register 1", 10, (oy += x));
+		r.drawBits(OR1, 130, oy);
+		r.write("Other Register 2", 10, (oy += x));
+		r.drawBits(OR2, 130, oy);
 
-		r.write("Read Register 1", 10, 100, Color.gray);
-		r.drawBits(readReg1, 130, 100);
+		r.write("Write Data", 10, (oy += 2 * x));
+		r.drawBits(writeData, 130, oy);
 
-		r.write("Read Register 2", 10, 120, Color.gray);
-		r.drawBits(readReg2, 130, 120);
-
-		r.write("Write Data", 10, 140, Color.gray);
-		r.drawBits(writeData, 130, 140);
-
-		r.write("Write Register", 10, 160, Color.gray);
-		r.drawBits(writeReg, 130, 160);
+		r.write("Read Register 1", 10, (oy += 2 * x));
+		r.drawBits(readReg1, 110, oy);
+		r.write("Read Register 2", 160, oy);
+		r.drawBits(readReg2, 260, oy);
+		r.write("Write Register", 310, oy);
+		r.drawBits(writeReg, 410, oy);
 	}
+
 }

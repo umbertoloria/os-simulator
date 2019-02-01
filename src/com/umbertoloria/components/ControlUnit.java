@@ -1,33 +1,38 @@
-package com.umbertoloria;
+package com.umbertoloria.components;
 
-import com.umbertoloria.bittings.Bit;
-import com.umbertoloria.bittings.Bite;
+import com.umbertoloria.bitting.Bit;
+import com.umbertoloria.bitting.BitAlloc;
+import com.umbertoloria.bitting.BitLink;
+import com.umbertoloria.bitting.BitUse;
+import com.umbertoloria.graphics.Renderer;
 import com.umbertoloria.interfaces.Clockable;
+import com.umbertoloria.utils.ALUUtils;
 import com.umbertoloria.utils.ICB;
-import com.umbertoloria.utils.InstructionUtils;
 
 import java.awt.*;
 
 public class ControlUnit implements Clockable {
 
 	private Bit[] instr;
-	private Bit readFlag1, readFlag2, writeFlag, aluSrc1, aluSrc2;
+	private Bit readFlag1, readFlag2, writeFlag, aluSrc1, aluSrc2, jumpFlag;
 	//private Bit memToReg = new Bit();
-	private Bit[] op1 = new Bit[64];
-	private Bit[] op2 = new Bit[64];
+	private Bit[] op1, op2;
 	private Bit[] writeRegister;
 	private Bit[] aluMode;
+	private Bit[] nextInstr;
 
 	ControlUnit() {
-		Bit.WATCH("Control Unit");
 		readFlag1 = new Bit();
 		readFlag2 = new Bit();
 		writeFlag = new Bit();
 		aluSrc1 = new Bit();
 		aluSrc2 = new Bit();
-		writeRegister = Bite.initSet(3, false);
-		aluMode = Bite.initSet(4, false);
-		Bit.eWATCH();
+		jumpFlag = new Bit();
+		op1 = BitAlloc.create(64, false);
+		op2 = BitAlloc.create(64, false);
+		writeRegister = BitAlloc.create(3, false);
+		aluMode = BitAlloc.create(4, false);
+		nextInstr = BitAlloc.create(64, false);
 	}
 
 	/**
@@ -44,19 +49,20 @@ public class ControlUnit implements Clockable {
 	public void clock() {
 
 		// Prelevo informazioni dai bit iniziali dell'istruzione
-		ICB iib = InstructionUtils.getICB(Bite.toBools(Bite.truncate(instr, InstructionUtils.INSTR_CODE_SIZE)));
+		ICB iib = ICB.getICB(BitUse.toBools(BitAlloc.truncate(instr, 6)));
 
 		// Scarico gli operandi dall'istruzione
 		int operandsCount = iib.getOperandsCount();
 		if (operandsCount == 2) {
-			Bite.linkSub(op1, instr, 6, 6 + 64);
-			Bite.linkSub(op2, instr, 6 + 64, 6 + 64 + 64);
+			BitUse.sub(op1, instr, 6, 6 + 64);
+			BitUse.sub(op2, instr, 6 + 64, 6 + 64 + 64);
 		} else if (operandsCount == 1) {
-			Bite.linkSub(op1, instr, 6, 6 + 64);
+			BitUse.sub(op1, instr, 6, 6 + 64);
 		} else if (operandsCount == 0) {
 			// Non ho ancora implementato un'istruzione senza operandi...
+			System.err.println("Non ho ancora implementato un'istruzione senza operandi...");
 		} else {
-			throw new RuntimeException("Qualcosa è sfuggita.");
+			throw new RuntimeException("Qualcosa è sfuggito");
 		}
 
 		// Configurazione dei flags
@@ -66,17 +72,36 @@ public class ControlUnit implements Clockable {
 		writeFlag.set(instr_flags[2]);
 		aluSrc1.set(instr_flags[3]);
 		aluSrc2.set(instr_flags[4]);
+		jumpFlag.set(instr_flags[5]);
 
 		// Registri di scrittura (opzionale)
 		boolean[] tmpWriteRegister = iib.getRegister();
 		if (tmpWriteRegister != null) {
-			Bite.set(writeRegister, tmpWriteRegister);
+			BitUse.set(writeRegister, tmpWriteRegister);
+		} else {
+			// non so dove scrivere, forse per un istruzione "set"
+			// prendo il registro che sta scritto nel primo operando dell'istruzione
+			// TODO: sistemare questa cosa
+			Bit[] app = new Bit[3];
+			BitLink.linkSub(app, op1, 61, 64);
+			BitUse.set(writeRegister, app);
 		}
 
 		// AluMode (opzionale)
 		boolean[] tmpAluMode = iib.getAluMode();
 		if (tmpAluMode != null) {
-			Bite.set(aluMode, tmpAluMode);
+			BitUse.set(aluMode, tmpAluMode);
+		} else {
+			// imposto la ALU mode ad ADD (questa cosa la uso solo per "set", per ora...)
+			// edit: adesso anche per il GOTO
+			BitUse.set(aluMode, ALUUtils.ADD);
+		}
+
+		// Link nuova istruzione (solo per GOT*): codice temporaneo
+		if (iib.getAluMode() == ALUUtils.GOTO) {
+			BitLink.link(nextInstr, op1);
+		} else if (iib.getAluMode() == ALUUtils.GOTV || iib.getAluMode() == ALUUtils.GOTF) {
+			BitLink.link(nextInstr, op2);
 		}
 	}
 
@@ -152,43 +177,43 @@ public class ControlUnit implements Clockable {
 		return aluMode;
 	}
 
+	Bit getJUMPFLAG() {
+		return jumpFlag;
+	}
+
+	Bit[] getNEXTINSTR() {
+		return nextInstr;
+	}
+
 	void draw(Renderer r, boolean lastClocked) {
 		if (lastClocked) {
-			r.box(0, 0, 780, 130, Color.darkGray, true);
+			r.box(0, 0, 652, 92, Color.darkGray, true);
 		}
-		r.box(0, 0, 780, 130, Color.green, false);
-		r.write("Control Unit", 10, 10, Color.gray);
-		r.write("Instruction", 10, 30, Color.gray);
-		r.drawInstr(instr, 130, 30);
+		r.box(0, 0, 652, 92, Color.green, false);
+		int x = Renderer.bs;
+		int oy = 10 - x;
+		r.write("Instruction", 10, (oy += x));
+		r.drawInstr(instr, 130, oy);
 
-		r.write("Operator 1", 10, 50, Color.gray);
-		r.drawBits(op1, 130, 50);
-		r.write("Operator 2", 10, 70, Color.gray);
-		r.drawBits(op2, 130, 70);
+		r.write("Operator 1", 10, (oy += 2 * x));
+		r.drawBits(op1, 130, oy);
+		r.write("Operator 2", 10, (oy += 2 * x));
+		r.drawBits(op2, 130, oy);
 
-		r.write("Read Flag 1", 10, 90, Color.gray);
-		r.drawBit(readFlag1, 90, 90);
-		r.write("Read Flag 2", 120, 90, Color.gray);
-		r.drawBit(readFlag2, 200, 90);
-		r.write("Write Register", 230, 90, Color.gray);
-		r.drawBits(writeRegister, 320, 90);
-		r.write("Write Flag", 390, 90, Color.gray);
-		r.drawBit(writeFlag, 460, 90);
+		r.write("Read Flag 1", 10, (oy += 2 * x));
+		r.drawBit(readFlag1, 90, oy);
+		r.write("Read Flag 2", 120, oy);
+		r.drawBit(readFlag2, 200, oy);
+		r.write("Write Register", 230, oy);
+		r.drawBits(writeRegister, 320, oy);
+		r.write("Write Flag", 390, oy);
+		r.drawBit(writeFlag, 460, oy);
 
-		r.write("ALU Src 1", 10, 110, Color.gray);
-		r.drawBit(aluSrc1, 90, 110);
-		r.write("ALU Src 2", 120, 110, Color.gray);
-		r.drawBit(aluSrc2, 200, 110);
-		r.write("ALU Mode", 230, 110, Color.gray);
-		r.drawBits(aluMode, 320, 110);
-
-		/*for (int i = 0; i < ram.length; i++) {
-			r.write("Box #" + (i + 1), 10, 30 + i * 20, Color.gray);
-			r.drawBits(ram[i], 130, 30 + i * 20);
-		}
-		r.write("In", 10, 30 + ram.length * 20 + 10, Color.gray);
-		r.drawBits(in, 130, 30 + ram.length * 20 + 10);
-		r.write("Out", 10, 30 + ram.length * 20 + 40, Color.gray);
-		r.drawBits(out, 130, 30 + ram.length * 20 + 40);*/
+		r.write("ALU Src 1", 10, (oy += 2 * x));
+		r.drawBit(aluSrc1, 90, oy);
+		r.write("ALU Src 2", 120, oy);
+		r.drawBit(aluSrc2, 200, oy);
+		r.write("ALU Mode", 230, oy);
+		r.drawBits(aluMode, 320, oy);
 	}
 }

@@ -1,12 +1,11 @@
-package com.umbertoloria;
+package com.umbertoloria.components;
 
-import com.umbertoloria.bittings.Bit;
-import com.umbertoloria.bittings.Bite;
+import com.umbertoloria.bitting.Bit;
+import com.umbertoloria.bitting.BitAlloc;
+import com.umbertoloria.bitting.BitLink;
+import com.umbertoloria.graphics.Renderer;
 import com.umbertoloria.integrates.MUX;
 import com.umbertoloria.interfaces.Clockable;
-import com.umbertoloria.utils.RegistersUtils;
-
-import java.util.Scanner;
 
 public class Computer implements Clockable {
 
@@ -20,8 +19,10 @@ public class Computer implements Clockable {
 	private MUX aluSrc1Mux = new MUX();
 	private MUX aluSrc2Mux = new MUX();
 	private ArithmeticLogicUnit arithmeticLogicUnit = new ArithmeticLogicUnit();
+	private int lastInstrIndex = 0;
+	private int frequency;
 
-	void newInstr(String instr, int index) {
+	public void newInstr(String instr) {
 		// Aggiungo alla mia istruzione di partenza
 		// i restanti bit per raggiungere la lunghezza 192.
 		StringBuilder extendedInstr = new StringBuilder();
@@ -30,37 +31,11 @@ public class Computer implements Clockable {
 			extendedInstr.append("0");
 		}
 		// Carico l'istruzione completa in memoria.
-		memory.addInstr(Bite.toBits(extendedInstr.toString()), index * 3);
+		memory.addInstr(BitAlloc.create(extendedInstr.toString()), lastInstrIndex++ * 3);
 	}
 
-	void registerStatus(boolean hex) {
-		String AR = regs.getRegContent(RegistersUtils.AR_C, hex);
-		String LR = regs.getRegContent(RegistersUtils.LR_C, hex);
-		String MR = regs.getRegContent(RegistersUtils.MR_C, hex);
-		String CR = regs.getRegContent(RegistersUtils.CR_C, hex);
-		String OR1 = regs.getRegContent(RegistersUtils.OR1_C, hex);
-		String OR2 = regs.getRegContent(RegistersUtils.OR2_C, hex);
-		System.out.print("+---------------------------");
-		if (hex) {
-			System.out.println("-----------------+");
-		} else {
-			System.out.println("-----------------------------------------------------------------+");
-		}
-		System.out.println("| Arithmetical Register   | " + AR + " |");
-		System.out.println("|      Logical Register   | " + LR + " |");
-		System.out.println("|       Memory Register   | " + MR + " |");
-		System.out.println("|    Condition Register   | " + CR + " |");
-		System.out.println("|        Other Register 1 | " + OR1 + " |");
-		System.out.println("|        Other Register 2 | " + OR2 + " |");
-		System.out.print("+---------------------------");
-		if (hex) {
-			System.out.println("-----------------+");
-		} else {
-			System.out.println("-----------------------------------------------------------------+");
-		}
-	}
-
-	Computer() {
+	public Computer(int frequency) {
+		this.frequency = frequency;
 		// PC
 		Bit[] INSTRUCTION_ADDRESS = programCounter.get();
 		// IM
@@ -75,13 +50,19 @@ public class Computer implements Clockable {
 		Bit ALUSRC2 = controlUnit.getALUSRC2();
 		Bit[] OPERATOR1 = controlUnit.getOP1();
 		Bit[] OPERATOR2 = controlUnit.getOP2();
+		Bit[] READREGISTER1 = new Bit[3];
+		Bit[] READREGISTER2 = new Bit[3];
+		BitLink.linkSub(READREGISTER1, OPERATOR1, 61, 64);
+		BitLink.linkSub(READREGISTER2, OPERATOR2, 61, 64);
 		Bit[] WRITEREGISTER = controlUnit.getWriteRegister();
 		Bit[] ALUMODE = controlUnit.getALUMODE();
+		Bit JUMPFLAG = controlUnit.getJUMPFLAG();
+		Bit[] NEXTINSTR = controlUnit.getNEXTINSTR();
 		// Read REGs
 		regs.setReadFlag1(READFLAG1);
 		regs.setReadFlag2(READFLAG2);
-		regs.setReadReg1(OPERATOR1);
-		regs.setReadReg2(OPERATOR2);
+		regs.setReadReg1(READREGISTER1);
+		regs.setReadReg2(READREGISTER2);
 		Bit[] READDATA1 = regs.getData1();
 		Bit[] READDATA2 = regs.getData2();
 		// ALU
@@ -96,11 +77,14 @@ public class Computer implements Clockable {
 		arithmeticLogicUnit.setA(ALUSRC1OUT);
 		arithmeticLogicUnit.setB(ALUSRC2OUT);
 		arithmeticLogicUnit.setMode(ALUMODE);
-		// Write REGs
 		Bit[] ALURESULT = arithmeticLogicUnit.getResult();
+		// Write REGs
 		regs.setWriteFlag(WRITEFLAG);
 		regs.setWriteReg(WRITEREGISTER);
 		regs.setWriteData(ALURESULT);
+		// PC
+		programCounter.setJumpFlag(JUMPFLAG);
+		programCounter.setNextInstr(NEXTINSTR);
 	}
 
 	private Clockable lastClocked;
@@ -108,17 +92,13 @@ public class Computer implements Clockable {
 	private void clock(Clockable c) {
 		c.clock();
 		lastClocked = c;
-		System.out.println("Clocked " + c);
-		s.nextLine();
+		sleep((int) (1000d / frequency));
 	}
-
-	private static Scanner s = new Scanner(System.in);
 
 	private void clockBack(Clockable c) {
 		c.clockBack();
 		lastClocked = c;
-		System.out.println("Clocked (back) " + c);
-		s.nextLine();
+		sleep((int) (1000d / frequency));
 	}
 
 	public void clock() {
@@ -129,40 +109,39 @@ public class Computer implements Clockable {
 		clock(aluSrc1Mux);
 		clock(aluSrc2Mux);
 		clock(arithmeticLogicUnit);
-		// clock(memory);
+		// clockBack(memory);
 		clockBack(regs);
+		clockBack(programCounter);
 	}
 
-	/*private static void sleep(int millis) {
+	private static void sleep(int millis) {
 		try {
 			Thread.sleep(millis);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-	}*/
+	}
 
-	void draw(Renderer r) {
+	public void draw(Renderer r) {
 		r.translate(30, 30);
 		programCounter.draw(r, programCounter == lastClocked);
-//		System.out.println("prima " + (programCounter == lastClocked));
 
-		r.translate(0, 120);
+		r.translate(0, 104);
 		memory.draw(r, memory == lastClocked);
-//		System.out.println("dopo " + (memory == lastClocked));
 
-		r.translate(0, 200);
+		r.translate(682, -104);
 		controlUnit.draw(r, controlUnit == lastClocked);
 
-		r.translate(0, 150);
+		r.translate(0, 122);
 		regs.draw(r, regs == lastClocked);
 
-		r.translate(0, 200);
+		r.translate(0, 130);
 		aluSrc1Mux.draw(r, aluSrc1Mux == lastClocked);
 
-		r.translate(0, 130);
+		r.translate(0, 106);
 		aluSrc2Mux.draw(r, aluSrc2Mux == lastClocked);
 
-		r.translate(0, 130);
+		r.translate(0, 106);
 		arithmeticLogicUnit.draw(r, arithmeticLogicUnit == lastClocked);
 	}
 

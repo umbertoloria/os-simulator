@@ -1,9 +1,9 @@
 package com.umbertoloria.integrates;
 
-import com.umbertoloria.Computer;
-import com.umbertoloria.Renderer;
-import com.umbertoloria.bittings.Bit;
-import com.umbertoloria.bittings.Bite;
+import com.umbertoloria.components.Computer;
+import com.umbertoloria.graphics.Renderer;
+import com.umbertoloria.bitting.Bit;
+import com.umbertoloria.bitting.BitLink;
 import com.umbertoloria.interfaces.Clockable;
 
 import java.awt.*;
@@ -23,8 +23,7 @@ public class MUX implements Clockable {
 	}
 
 	public void clock() {
-		//out = in[s.get() ? 1 : 0];
-		Bite.linkLeft(out, in[s.get() ? 1 : 0]);
+		BitLink.link(out, in[s.get() ? 1 : 0]);
 	}
 
 	public Bit[] get() {
@@ -33,17 +32,18 @@ public class MUX implements Clockable {
 
 	public void draw(Renderer r, boolean lastClocked) {
 		if (lastClocked) {
-			r.box(0, 0, 780, 110, Color.darkGray, true);
+			r.box(0, 0, 652, 76, Color.darkGray, true);
 		}
-		r.box(0, 0, 780, 110, Color.blue, false);
-		r.write("MUX", 10, 10, Color.gray);
-		r.write("Control Bit", 10, 30, Color.gray);
-		r.drawBit(s, 130, 30);
-		r.write("Input 0", 10, 50, Color.gray);
-		r.drawBits(in[0], 130, 50);
-		r.write("Input 1", 10, 70, Color.gray);
-		r.drawBits(in[1], 130, 70);
-		r.write("Out", 10, 90, Color.gray);
-		r.drawBits(out, 130, 90);
+		r.box(0, 0, 652, 76, Color.orange, false);
+		int x = Renderer.bs;
+		int oy = 10 - x;
+		r.write("Control Bit", 10, (oy += x));
+		r.drawBit(s, 130, oy);
+		r.write("Input 0", 10, (oy += 2 * x));
+		r.drawBits(in[0], 130, oy);
+		r.write("Input 1", 10, (oy += 2 * x));
+		r.drawBits(in[1], 130, oy);
+		r.write("Out", 10, (oy += 2 * x));
+		r.drawBits(out, 130, oy);
 	}
 }

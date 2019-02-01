@@ -1,6 +1,6 @@
 package com.umbertoloria.integrates;
 
-import com.umbertoloria.bittings.Bit;
+import com.umbertoloria.bitting.Bit;
 import com.umbertoloria.interfaces.Clockable;
 
 public class AND implements Clockable {

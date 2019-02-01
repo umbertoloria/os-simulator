@@ -1,10 +1,11 @@
-package com.umbertoloria;
+package com.umbertoloria.components;
 
-import com.umbertoloria.bittings.Bit;
-import com.umbertoloria.bittings.Bite;
+import com.umbertoloria.bitting.*;
+import com.umbertoloria.graphics.Renderer;
 import com.umbertoloria.integrates.OR;
 import com.umbertoloria.interfaces.Clockable;
 import com.umbertoloria.utils.ALUUtils;
+import com.umbertoloria.utils.BinUtils;
 import com.umbertoloria.utils.Circuits;
 
 import java.awt.*;
@@ -15,16 +16,14 @@ class ArithmeticLogicUnit implements Clockable {
 	private Bit[] a = new Bit[Computer.ARCH];
 	private Bit[] b = new Bit[Computer.ARCH];
 	private Bit[] result;
-	private Bit[] zero; // TODO: Forse è l'ottavo registro?
+	private Bit[] zero;
 	private OR orGate = new OR(Computer.ARCH);
 //	private ADDER[] adder = new ADDER[Computer.ARCH];
 //	private AND[] andGate = new AND[2];
 
 	ArithmeticLogicUnit() {
-		Bit.WATCH("Arithmetic-Logic Unit");
-		result = Bite.toBits("0000000000000000000000000000000000000000000000000000000000000000");
-		zero = Bite.toBits("0000000000000000000000000000000000000000000000000000000000000000");
-		Bit.eWATCH();
+		result = BitAlloc.create("0000000000000000000000000000000000000000000000000000000000000000");
+		zero = BitAlloc.create("0000000000000000000000000000000000000000000000000000000000000000");
 	}
 
 	/**
@@ -51,7 +50,7 @@ class ArithmeticLogicUnit implements Clockable {
 		/*if (b.length != Computer.ARCH) {
 			throw new RuntimeException();
 		}*/
-		//Bite.linkLeft(this.b, b);
+		//BitLink.linkLeft(this.b, b);
 		this.b = b;
 	}
 
@@ -67,81 +66,84 @@ class ArithmeticLogicUnit implements Clockable {
 	 Executes the operator defined by the ALU-Mode.
 	 */
 	public void clock() {
-		if (Bite.equals(mode, ALUUtils.AND)) {
+		if (BitCheck.equals(mode, ALUUtils.AND)) {
 			and(a, b, result);
-		} else if (Bite.equals(mode, ALUUtils.OR)) {
+		} else if (BitCheck.equals(mode, ALUUtils.OR)) {
 			or(a, b, result);
-		} else if (Bite.equals(mode, ALUUtils.NOT)) {
+		} else if (BitCheck.equals(mode, ALUUtils.NOT)) {
 			not(a, result);
-		} else if (Bite.equals(mode, ALUUtils.ADD)) {
+		} else if (BitCheck.equals(mode, ALUUtils.ADD)) {
 			add(a, b, result);
-		} else if (Bite.equals(mode, ALUUtils.SUB)) {
+		} else if (BitCheck.equals(mode, ALUUtils.SUB)) {
 			sub(a, b, result);
+		} else if (BitCheck.equals(mode, ALUUtils.GOTO)) {
+			BitUse.set(result, zero);
+			result[result.length - 1].set(true);
 		}/* else if (Arrays.equals(mode, ALUUtils.GOTV)) {
 
 		} else if (Arrays.equals(mode, ALUUtils.GOTF)) {
 
-		}*/ else if (Bite.equals(mode, ALUUtils.EQU)) {
+		}*/ else if (BitCheck.equals(mode, ALUUtils.EQU)) {
 			sub(a, b, result);
 			if (!thereAreAnyTrues(result, 0)) {
 				// Situazione: nessun 1
 				result[result.length - 1].enable();
 			} else {
-				Bite.set(result, zero);
+				BitUse.set(result, zero);
 			}
-		} else if (Bite.equals(mode, ALUUtils.DIFF)) {
+		} else if (BitCheck.equals(mode, ALUUtils.DIFF)) {
 			sub(a, b, result);
 			if (thereAreAnyTrues(result, 0)) {
 				// Situazione: almeno un 1
-				Bite.set(result, zero);
+				BitUse.set(result, zero);
 				result[result.length - 1].set(true);
 			} else {
-				Bite.set(result, zero);
+				BitUse.set(result, zero);
 			}
-		} else if (Bite.equals(mode, ALUUtils.LOW)) {
+		} else if (BitCheck.equals(mode, ALUUtils.LOW)) {
 			sub(a, b, result);
 			if (result[0].get()) {
 				// Situazione: primo 1 e poi non importa
-				Bite.set(result, zero);
+				BitUse.set(result, zero);
 				result[result.length - 1].set(true);
 			} else {
-				Bite.set(result, zero);
+				BitUse.set(result, zero);
 			}
-		} else if (Bite.equals(mode, ALUUtils.LOWEQ)) {
+		} else if (BitCheck.equals(mode, ALUUtils.LOWEQ)) {
 			sub(a, b, result);
 			// S.C.E.: thereAreAnyTrues viene chiamata solo se result[0] = false
 			if (result[0].get() || !thereAreAnyTrues(result, 1)) {
 				// Situazione: primo 1 e poi non importa
 				//             tutti 0
-				Bite.set(result, zero);
+				BitUse.set(result, zero);
 				result[result.length - 1].set(true);
 			} else {
-				Bite.set(result, zero);
+				BitUse.set(result, zero);
 			}
-		} else if (Bite.equals(mode, ALUUtils.GRE)) {
+		} else if (BitCheck.equals(mode, ALUUtils.GRE)) {
 			sub(a, b, result);
 			if (!result[0].get() && thereAreAnyTrues(result, 1)) {
 				// Situazione: Primo 0 e almeno un 1
-				Bite.set(result, zero);
+				BitUse.set(result, zero);
 				result[result.length - 1].set(true);
 			} else {
-				Bite.set(result, zero);
+				BitUse.set(result, zero);
 			}
-		} else if (Bite.equals(mode, ALUUtils.GREEQ)) {
+		} else if (BitCheck.equals(mode, ALUUtils.GREEQ)) {
 			sub(a, b, result);
 			if (!result[0].get()) {
 				// Situazione: primo 0 e poi non importa
-				Bite.set(result, zero);
+				BitUse.set(result, zero);
 				result[result.length - 1].set(true);
 			} else {
-				Bite.set(result, zero);
+				BitUse.set(result, zero);
 			}
 		}/* else if (Arrays.equals(mode, ALUUtils.LOAD)) {
-
+			NON CI ARRIVERà MAI PERCHé LOAD E STORE SONO ALIAS.
 		} else if (Arrays.equals(mode, ALUUtils.STORE)) {
 
 		}*/ else {
-			throw new RuntimeException("Istruzione ArithmeticLogicUnit non capita.");
+			throw new RuntimeException("Istruzione ArithmeticLogicUnit non capita");
 		}
 	}
 
@@ -194,17 +196,19 @@ class ArithmeticLogicUnit implements Clockable {
 
 	void draw(Renderer r, boolean lastClocked) {
 		if (lastClocked) {
-			r.box(0, 0, 780, 110, Color.darkGray, true);
+			r.box(0, 0, 652, 76, Color.darkGray, true);
 		}
-		r.box(0, 0, 780, 110, Color.blue, false);
-		r.write("Arithmetic-Logic Unit", 10, 10, Color.gray);
-		r.write("ALU Mode", 10, 30, Color.gray);
-		r.drawBits(mode, 130, 30);
-		r.write("A", 10, 50, Color.gray);
-		r.drawBits(a, 130, 50);
-		r.write("B", 10, 70, Color.gray);
-		r.drawBits(b, 130, 70);
-		r.write("Result", 10, 90, Color.gray);
-		r.drawBits(result, 130, 90);
+		r.box(0, 0, 652, 76, Color.cyan, false);
+		int x = Renderer.bs;
+		int oy = 10;
+		r.write("ALU Mode", 10, oy);
+		r.drawBits(mode, 130, oy);
+		r.write("A", 10, (oy += 2 * x));
+		r.drawBits(a, 130, oy);
+		r.write("B", 10, (oy += 2 * x));
+		r.drawBits(b, 130, oy);
+		r.write("Result", 10, (oy += 2 * x));
+		r.drawBits(result, 130, oy);
 	}
+
 }

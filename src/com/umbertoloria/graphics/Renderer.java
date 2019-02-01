@@ -1,19 +1,22 @@
-package com.umbertoloria;
+package com.umbertoloria.graphics;
 
-import com.umbertoloria.bittings.Bit;
+import com.umbertoloria.bitting.Bit;
 
 import java.awt.*;
 
 public class Renderer {
 
 	private Graphics g;
+	public static final int bs = 8;
+	private static final int mbs = 2;
 
 	void attach(Graphics g) {
 		this.g = g;
+		g.setFont(new Font("Arial", Font.BOLD, 10));
 	}
 
-	public void write(String str, int ox, int oy, Color color) {
-		g.setColor(color);
+	public void write(String str, int ox, int oy) {
+		g.setColor(Color.gray);
 		g.drawString(str, ox, oy + g.getFont().getSize() - 3);
 	}
 
@@ -28,21 +31,17 @@ public class Renderer {
 
 	public void drawBit(Bit bit, int ox, int oy) {
 		if (bit.get()) {
-			box(ox, oy, 10, 10, Color.gray, true);
-			/*g.setColor(Color.GREEN);
-			g.fillRect(ox, oy, 10, 10);*/
+			box(ox, oy, bs, bs, Color.gray, true);
 		}
-		box(ox, oy, 10, 10, Color.gray, false);
-		/*g.setColor(Color.GRAY);
-		g.drawRect(ox, oy, 10, 10);*/
+		box(ox, oy, bs, bs, Color.gray, false);
 	}
 
 	public void drawBits(Bit[] bits, int ox, int oy) {
 		if (bits[0] == null) {
-			box(ox, oy, 640, 10, Color.gray, false);
+			box(ox, oy, 64 * bs, bs, Color.gray, false);
 		} else {
 			for (int i = 0; i < bits.length; i++) {
-				drawBit(bits[i], ox + i * 10, oy);
+				drawBit(bits[i], ox + i * bs, oy);
 			}
 		}
 	}
@@ -51,11 +50,11 @@ public class Renderer {
 		if (instr[0] != null) {
 			for (int i = 0; i < instr.length; i++) {
 				if (instr[i].get()) {
-					box(ox + i * 3, oy, 3, 10, Color.blue, true);
+					box(ox + i * mbs, oy, mbs, bs, Color.blue, true);
 				}
 			}
 		}
-		box(ox, oy, instr.length * 3, 10, Color.gray, false);
+		box(ox, oy, instr.length * mbs, bs, Color.gray, false);
 	}
 
 	public void translate(int tx, int ty) {
